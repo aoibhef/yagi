@@ -10,3 +10,16 @@
 [submodule "external/glm"]
 	path = external/glm
 	url = ../../g-truc/glm.git
+[submodule "external/openal-soft"]
+	path = external/openal-soft
+	url = ../../kcat/openal-soft.git
+[submodule "external/libnyquist"]
+	path = external/libnyquist
+	url = ../../ddiakopoulos/libnyquist.git
+[submodule "external/imgui"]
+	path = external/imgui
+	url = ../../ocornut/imgui.git
+	branch = docking
+[submodule "external/pcg-cpp"]
+	path = external/pcg-cpp
+	url = ../../imneme/pcg-cpp.git
