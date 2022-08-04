@@ -1,5 +1,5 @@
 #include "yagi/util/rnd.h"
-#include "spdlog/spdlog.h"
+#include "yagi/util/log.h"
 
 namespace rnd {
 
@@ -53,9 +53,8 @@ void debug_show_seed() {
   generator();  // Make sure generator has been invoked before
 
   if (std::uint64_t(seed_info().seed >> 64) == 0 && std::uint64_t(seed_info().stream >> 64) == 0) {
-    spdlog::debug(
-        "Seed statement:\n"
-        "  rnd::seed({:#x}, {:#x});",
+    LOG_DEBUG(
+        "Seed statement: rnd::seed({:#x}, {:#x});",
         std::uint64_t(seed_info().seed),
         std::uint64_t(seed_info().stream)
     );
@@ -65,12 +64,8 @@ void debug_show_seed() {
     auto seed_lo = std::uint64_t(seed_info().seed);
     auto stream_hi = std::uint64_t(seed_info().stream >> 64);
     auto stream_lo = std::uint64_t(seed_info().stream);
-    spdlog::debug(
-        "Seed statement:\n"
-        "  rnd::seed128(\n"
-        "      {:#x}, {:#x},\n"
-        "      {:#x}, {:#x}\n"
-        "  );",
+    LOG_DEBUG(
+        "Seed statement: rnd::seed128({:#x}, {:#x}, {:#x}, {:#x});",
         seed_hi, seed_lo,
         stream_hi, stream_lo
     );
