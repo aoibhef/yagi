@@ -1,6 +1,8 @@
-#pragma once
+#ifndef YAGI_UTIL_RND_H
+#define YAGI_UTIL_RND_H
 
 #include "pcg_random.hpp"
+#include "uuid.h"
 #include <cstdint>
 #include <concepts>
 #include <random>
@@ -144,5 +146,8 @@ T get(double chance) {
  */
 
 std::string base58(std::size_t length);
+std::string uuidv4();
 
 } // namespace rnd
+
+#endif //YAGI_UTIL_RND_H
