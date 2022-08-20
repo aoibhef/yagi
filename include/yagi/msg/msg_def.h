@@ -7,21 +7,21 @@
 
 namespace yagi::msg {
 
-enum class Type {
+enum class MsgType {
   AEvent,
   BEvent,
   CEvent
 };
 
-template<Type>
+template<MsgType>
 struct Map;
 
-#define DEFINE_MSG(t, ...)               \
-  struct t {                             \
-    __VA_ARGS__                          \
-  };                                     \
-  template<> struct Map<Type::t> { \
-    using type = t;                      \
+#define DEFINE_MSG(t, ...)         \
+  struct t {                       \
+    __VA_ARGS__                    \
+  };                               \
+  template<> struct Map<MsgType::t> { \
+    using type = t;                \
   };
 
 DEFINE_MSG(AEvent,
@@ -43,17 +43,17 @@ DEFINE_MSG(CEvent,
 #undef DEFINE_MSG
 
 struct Msg {
-  Type type;
+  MsgType type;
   std::variant<AEvent, BEvent, CEvent> data;
 };
 
 } // namespace yagi::msg
 
-inline std::ostream &operator<<(std::ostream &out, yagi::msg::Type value) {
+inline std::ostream &operator<<(std::ostream &out, yagi::msg::MsgType value) {
   std::string s;
 #define STRINGIFY(p) case (p): s = #p; break;
   switch (value) {
-    using enum yagi::msg::Type;
+    using enum yagi::msg::MsgType;
     STRINGIFY(AEvent)
     STRINGIFY(BEvent)
     STRINGIFY(CEvent)
@@ -61,6 +61,6 @@ inline std::ostream &operator<<(std::ostream &out, yagi::msg::Type value) {
 #undef STRINGIFY
   return out << s;
 }
-template<> struct fmt::formatter<yagi::msg::Type> : ostream_formatter {};
+template<> struct fmt::formatter<yagi::msg::MsgType> : ostream_formatter {};
 
 #endif //YAGI_MSG_MSG_H

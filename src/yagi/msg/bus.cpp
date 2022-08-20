@@ -4,7 +4,7 @@
 namespace yagi::msg {
 
 std::unordered_map<std::string, MsgFunc> Bus::funcs_{};
-std::unordered_map<Type, std::unordered_set<std::string>> Bus::subscriptions_{};
+std::unordered_map<MsgType, std::unordered_set<std::string>> Bus::subscriptions_{};
 std::unordered_map<std::string, std::queue<Msg>> Bus::queues_{};
 
 std::string Bus::register_endpoint(const MsgFunc &&f) {
@@ -19,7 +19,7 @@ std::string Bus::register_endpoint(const MsgFunc &&f) {
   return id;
 }
 
-void Bus::subscribe(const std::string &id, const Type &type) {
+void Bus::subscribe(const std::string &id, const MsgType &type) {
   subscriptions_[type].insert(id);
 }
 

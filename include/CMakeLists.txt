@@ -1,6 +1,10 @@
 set(YAGI_INCLUDE_FILES ${YAGI_INCLUDE_FILES}
+        include/yagi/app/glfw_callbacks.h
+        include/yagi/app/oracle.h
+        include/yagi/app/window.h
+
         include/yagi/msg/bus.h
-        include/yagi/msg/msg.h
+        include/yagi/msg/msg_def.h
 
         include/yagi/util/log.h
         include/yagi/util/overloaded.h

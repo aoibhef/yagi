@@ -1,7 +1,7 @@
 #ifndef YAGI_MSG_BUS_H
 #define YAGI_MSG_BUS_H
 
-#include "yagi/msg/msg.h"
+#include "yagi/msg/msg_def.h"
 #include <functional>
 #include <queue>
 #include <string>
@@ -16,20 +16,20 @@ class Bus {
 public:
   static std::string register_endpoint(const MsgFunc &&f);
 
-  static void subscribe(const std::string &id, const Type &type);
+  static void subscribe(const std::string &id, const MsgType &type);
 
-  template<Type T, typename... Args>
+  template<MsgType T, typename... Args>
   static void send(const Args &...args);
 
   static void poll(const std::string &id);
 
 private:
   static std::unordered_map<std::string, MsgFunc> funcs_;
-  static std::unordered_map<Type, std::unordered_set<std::string>> subscriptions_;
+  static std::unordered_map<MsgType, std::unordered_set<std::string>> subscriptions_;
   static std::unordered_map<std::string, std::queue<Msg>> queues_;
 };
 
-template<Type T, typename... Args>
+template<MsgType T, typename... Args>
 void Bus::send(const Args &...args) {
   for (const auto &id: subscriptions_[T])
     queues_[id].push(Msg{T, typename Map<T>::type{args...}});
