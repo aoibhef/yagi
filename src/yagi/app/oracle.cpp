@@ -1,4 +1,5 @@
 #include "yagi/app/oracle.h"
+
 #include "yagi/util/log.h"
 #include "GLFW/glfw3.h"
 
@@ -20,10 +21,6 @@ Oracle::Oracle() {
 Oracle::~Oracle() {
   glfwTerminate();
   YAGI_LOG_DEBUG("Terminated GLFW");
-}
-
-void Oracle::run_main_loop() {
-
 }
 
 } // namespace yagi

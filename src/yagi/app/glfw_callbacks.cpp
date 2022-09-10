@@ -1,4 +1,6 @@
 #include "yagi/app/glfw_callbacks.h"
+
+#include "yagi/msg/bus.h"
 #include "yagi/util/log.h"
 
 namespace yagi::internal {
@@ -39,7 +41,9 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {}
 
 void window_content_scale_callback(GLFWwindow *window, float xscale, float yscale) {}
 
-void window_pos_callback(GLFWwindow *window, int xpos, int ypos) {}
+void window_pos_callback(GLFWwindow *window, int xpos, int ypos) {
+  msg::Bus::send<msg::MsgType::WindowPos>(window, xpos, ypos);
+}
 
 void window_iconify_callback(GLFWwindow *window, int iconified) {}
 
