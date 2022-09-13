@@ -1,4 +1,4 @@
-#include "yagi/app/glfw_callbacks.h"
+#include "yagi/core/glfw_callbacks.h"
 
 #include "yagi/msg/bus.h"
 #include "yagi/util/log.h"

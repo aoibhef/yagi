@@ -1,6 +1,6 @@
-#include "yagi/app/window.h"
+#include "yagi/core/window.h"
 
-#include "yagi/app/glfw_callbacks.h"
+#include "yagi/core/glfw_callbacks.h"
 #include "yagi/util/log.h"
 #include "yagi/util/overloaded.h"
 #include "yagi/util/platform.h"
@@ -11,10 +11,11 @@ void Window::open(const WindowOpenParams &params) {
   msg_endpoint_id_ = msg::Bus::register_endpoint([&](const msg::Msg &msg) { received_msg_(msg); });
   msg::Bus::subscribe(msg_endpoint_id_, msg::MsgType::WindowPos);
 
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, params.glversion.x);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, params.glversion.y);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, params.gl_version.x);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, params.gl_version.y);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  wm_info_.gl_version = params.gl_version;
 
   if (set(params.flags, WindowFlags::fullscreen) || set(params.flags, WindowFlags::borderless))
     open_fullscreen_(params);
@@ -31,8 +32,16 @@ void Window::open(const WindowOpenParams &params) {
     glfwShowWindow(glfw_handle);
 }
 
+std::unique_ptr<Context> Window::create_ctx() {
+  return std::make_unique<Context>(wm_info_.gl_version);
+}
+
 bool Window::should_close() const {
   return glfwWindowShouldClose(glfw_handle);
+}
+
+void Window::swap() const {
+  glfwSwapBuffers(glfw_handle);
 }
 
 void Window::poll_msgs() {

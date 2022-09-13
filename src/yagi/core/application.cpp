@@ -1,4 +1,4 @@
-#include "yagi/app/application.h"
+#include "yagi/core/application.h"
 
 namespace yagi {
 

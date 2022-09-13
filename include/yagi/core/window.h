@@ -1,6 +1,7 @@
 #ifndef YAGI_APP_WINDOW_H
 #define YAGI_APP_WINDOW_H
 
+#include "yagi/gfx/context.h"
 #include "yagi/msg/bus.h"
 #include "yagi/util/enum_bitmask_ops.h"
 #define GLFW_INCLUDE_NONE
@@ -30,7 +31,7 @@ struct WindowOpenParams {
 
   WindowFlags flags{WindowFlags::none};
 
-  glm::ivec2 glversion{3, 3};
+  glm::ivec2 gl_version{3, 3};
 };
 
 class Window {
@@ -40,8 +41,11 @@ public:
   Window() = default;
 
   void open(const WindowOpenParams &params);
+  std::unique_ptr<Context> create_ctx();
 
   bool should_close() const;
+
+  void swap() const;
 
   void poll_msgs();
 
@@ -52,6 +56,7 @@ private:
   struct {
     bool borderless{false};
     bool vsync{false};
+    glm::ivec2 gl_version{};
   } wm_info_;
 
   GLFWmonitor *get_monitor_(int monitor_num);
