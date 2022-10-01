@@ -1,5 +1,6 @@
 #include "yagi/gfx/context.h"
 #include "yagi/util/log.h"
+#include "yagi/util/rnd.h"
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
 
@@ -28,6 +29,18 @@ void Context::clear(const RGB &color, const ClearBit &bit) {
       static_cast<float>(color.b) / 255.0f,
       static_cast<float>(color.a) / 255.0f);
   gl_->Clear(unwrap(bit));
+}
+
+ShaderBuilder Context::shader() {
+  return shader(rnd::base58(11));
+}
+
+ShaderBuilder Context::shader(const std::string &tag) {
+  return {gl_, tag};
+}
+
+FramebufferBuilder Context::framebuffer(GLsizei width, GLsizei height) {
+  return {gl_, width, height};
 }
 
 } // namespace yagi
