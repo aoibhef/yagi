@@ -50,8 +50,8 @@ void Window::poll_msgs() {
 
 void Window::received_msg_(const msg::Msg &msg) {
   std::visit(overloaded {
-    [&](const msg::WindowPos &m) { YAGI_LOG_INFO("Window pos: {}, {}", m.xpos, m.ypos); },
-    [&](const auto &m) { YAGI_LOG_WARN("Unhandled event {}", msg.type); }
+      [&](const msg::WindowPos &m) {},
+      [&](const auto &m) { YAGI_LOG_WARN("Unhandled event {}", msg.type); }
   }, msg.data);
 }
 

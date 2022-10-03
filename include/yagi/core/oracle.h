@@ -43,6 +43,9 @@ void Oracle::run_application() {
     glfwPollEvents();
     msg::Bus::poll_all();
   } while (!application_->window->should_close());
+
+  application_->deinitialize();
+  application_.reset(nullptr);
 }
 
 } // namespace yagi

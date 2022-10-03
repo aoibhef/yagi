@@ -7,6 +7,7 @@
 #include "yagi/util/enum_bitmask_ops.h"
 #include "glad/gl.h"
 #include "glm/glm.hpp"
+#include <concepts>
 #include <memory>
 
 namespace yagi {
@@ -33,6 +34,11 @@ public:
   ShaderBuilder shader(const std::string &tag);
 
   FramebufferBuilder framebuffer(GLsizei width, GLsizei height);
+
+  template <std::invocable<std::unique_ptr<GladGLContext> &> T>
+  void run_block(T &&func) { func(gl_); }
+
+  std::unique_ptr<GladGLContext> &get_underlying_ctx();
 
 private:
   std::unique_ptr<GladGLContext> gl_{nullptr};

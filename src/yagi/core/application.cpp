@@ -7,6 +7,7 @@ Application::Application() {
 }
 
 void Application::initialize() {}
+void Application::deinitialize() {}
 void Application::update(double dt) {}
 void Application::draw() {}
 
