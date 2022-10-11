@@ -1,6 +1,9 @@
 #ifndef YAGI_GFX_COLOR_H
 #define YAGI_GFX_COLOR_H
 
+#undef RGB  // FIXME: This is somehow getting a macro from wingdi.h? I think it's
+            //   coming from spdlog, but I'm not certain...should see if there's
+            //   a better way to deal with this
 #include "glm/glm.hpp"
 #include "fmt/ostream.h"
 
