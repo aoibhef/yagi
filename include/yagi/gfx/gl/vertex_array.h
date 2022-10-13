@@ -23,10 +23,25 @@ enum class AttrType {
   hf = GL_HALF_FLOAT,
   f = GL_FLOAT,
   d = GL_DOUBLE,
-  fix = GL_FIXED,
+  fixed = GL_FIXED,
   i_2_10_10_10_rev = GL_INT_2_10_10_10_REV,
   ui_2_10_10_10_rev = GL_UNSIGNED_INT_2_10_10_10_REV,
   ui_10f_11f_11f_rev = GL_UNSIGNED_INT_10F_11F_11F_REV
+};
+
+enum class DrawMode {
+  points = GL_POINTS,
+  line_strip = GL_LINE_STRIP,
+  line_loop = GL_LINE_LOOP,
+  lines = GL_LINES,
+  line_strip_adjacency = GL_LINE_STRIP_ADJACENCY,
+  lines_adjacency = GL_LINES_ADJACENCY,
+  triangle_strip = GL_TRIANGLE_STRIP,
+  triangle_fan = GL_TRIANGLE_FAN,
+  triangles = GL_TRIANGLES,
+  triangle_strip_adjacency = GL_TRIANGLE_STRIP_ADJACENCY,
+  triangles_adjacency = GL_TRIANGLES_ADJACENCY,
+  patches = GL_PATCHES
 };
 
 struct AttrPointer {
@@ -62,6 +77,8 @@ public:
   void bind() const;
   void unbind() const;
 
+  void draw_arrays(const DrawMode &mode, GLint first, GLsizei count);
+
 private:
   std::unique_ptr<GladGLContext> &gl_;
 
@@ -75,25 +92,6 @@ private:
 
 } // namespace yagi
 
-inline std::ostream &operator<<(std::ostream &out, yagi::AttrType value) {
-#define STRINGIFY(p) case (p): return out << #p;
-  switch (value) {
-    using enum yagi::AttrType;
-    STRINGIFY(b)
-    STRINGIFY(ub)
-    STRINGIFY(s)
-    STRINGIFY(us)
-    STRINGIFY(i)
-    STRINGIFY(ui)
-    STRINGIFY(hf)
-    STRINGIFY(f)
-    STRINGIFY(d)
-    STRINGIFY(fix)
-    STRINGIFY(i_2_10_10_10_rev)
-    STRINGIFY(ui_2_10_10_10_rev)
-    STRINGIFY(ui_10f_11f_11f_rev)
-  }
-#undef STRINGIFY
-}
+std::ostream &operator<<(std::ostream &out, yagi::AttrType value);
 
 #endif //YAGI_GFX_GL_VERTEX_ARRAY_H

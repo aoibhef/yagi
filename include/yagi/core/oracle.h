@@ -41,7 +41,7 @@ void Oracle::run_application() {
     application_->window->swap();
 
     glfwPollEvents();
-    msg::Bus::poll_all();
+    Bus::poll_all();
   } while (!application_->window->should_close());
 
   application_->deinitialize();

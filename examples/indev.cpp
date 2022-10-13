@@ -64,10 +64,7 @@ void main() {
 
     shader->use();
     shader->uniform_mat4f("mvp", glm::mat4(1.0f));
-    vao->bind();
-    ctx->run_block([&](const std::unique_ptr<GladGLContext> &gl) {
-      gl->DrawArrays(GL_TRIANGLES, 0, 3);
-    });
+    vao->draw_arrays(yagi::DrawMode::triangles, 0, 3);
   }
 };
 

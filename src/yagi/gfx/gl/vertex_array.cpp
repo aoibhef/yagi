@@ -38,6 +38,12 @@ void VertexArray::unbind() const {
   gl_->BindVertexArray(0);
 }
 
+void VertexArray::draw_arrays(const DrawMode &mode, GLint first, GLsizei count) {
+  bind();
+  gl_->DrawArrays(unwrap(mode), first, count);
+  unbind();
+}
+
 void VertexArray::gen_id_() {
   gl_->GenVertexArrays(1, &id);
   YAGI_LOG_TRACE("Generated vertex array ({})", id);
@@ -80,7 +86,7 @@ void VertexArray::process_buf_attrs_(Shader &shader, const std::vector<BufAttrs>
           attr.size,
           attr.type,
           attr.normalized,
-          (attr.type_size == -1) ? " overriden " : " ",
+          (attr.type_size != -1) ? " overriden " : " ",
           attr.stride * type_size,
           attr.offset * type_size
       );
@@ -101,10 +107,32 @@ std::unordered_map<AttrType, GLsizei> VertexArray::attr_type_size = {
     {AttrType::hf, sizeof(float) / 2},  // FIXME: No way this is right (wait for C++23 native support?)
     {AttrType::f, sizeof(float)},
     {AttrType::d, sizeof(double)},
-    {AttrType::fix, 32},
+    {AttrType::fixed, 32},
     {AttrType::i_2_10_10_10_rev, 32},
     {AttrType::ui_2_10_10_10_rev, 32},
     {AttrType::ui_10f_11f_11f_rev, 32}
 };
 
 } // namespace yagi
+
+std::ostream &operator<<(std::ostream &out, yagi::AttrType value) {
+#define STRINGIFY(p) case (p): return out << #p;
+  switch (value) {
+    using enum yagi::AttrType;
+    STRINGIFY(b)
+    STRINGIFY(ub)
+    STRINGIFY(s)
+    STRINGIFY(us)
+    STRINGIFY(i)
+    STRINGIFY(ui)
+    STRINGIFY(hf)
+    STRINGIFY(f)
+    STRINGIFY(d)
+    STRINGIFY(fixed)
+    STRINGIFY(i_2_10_10_10_rev)
+    STRINGIFY(ui_2_10_10_10_rev)
+    STRINGIFY(ui_10f_11f_11f_rev)
+  }
+#undef STRINGIFY
+}
+

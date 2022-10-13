@@ -8,8 +8,8 @@
 namespace yagi {
 
 void Window::open(const WindowOpenParams &params) {
-  msg_endpoint_id_ = msg::Bus::register_endpoint([&](const msg::Msg &msg) { received_msg_(msg); });
-  msg::Bus::subscribe(msg_endpoint_id_, msg::MsgType::WindowPos);
+  msg_endpoint_id_ = Bus::register_endpoint([&](const Msg &msg) { received_msg_(msg); });
+  Bus::subscribe(msg_endpoint_id_, MsgType::WindowPos);
 
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, params.gl_version.x);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, params.gl_version.y);
@@ -45,12 +45,12 @@ void Window::swap() const {
 }
 
 void Window::poll_msgs() {
-  msg::Bus::poll(msg_endpoint_id_);
+  Bus::poll(msg_endpoint_id_);
 }
 
-void Window::received_msg_(const msg::Msg &msg) {
+void Window::received_msg_(const Msg &msg) {
   std::visit(overloaded {
-      [&](const msg::WindowPos &m) {},
+      [&](const WindowPos &m) {},
       [&](const auto &m) { YAGI_LOG_WARN("Unhandled event {}", msg.type); }
   }, msg.data);
 }
