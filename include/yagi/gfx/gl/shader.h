@@ -27,6 +27,8 @@ public:
 
   void use();
 
+  GLint get_attrib_loc(const std::string &name);
+
   void uniform_1f(const std::string &name, float v);
   void uniform_2f(const std::string &name, glm::vec2 v);
   void uniform_3f(const std::string &name, glm::vec3 v);
@@ -80,7 +82,6 @@ private:
   std::unordered_map<std::string, GLint> attrib_locs_{};
   std::unordered_map<std::string, GLint> uniform_locs_{};
 
-  GLint get_attrib_loc_(const std::string &name);
   GLint get_uniform_loc_(const std::string &name);
 
   void del_id_();
