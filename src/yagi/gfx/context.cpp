@@ -1,12 +1,12 @@
 #include "yagi/gfx/context.h"
 #include "yagi/util/log.h"
 #include "yagi/util/rnd.h"
-#define GLFW_INCLUDE_NONE
-#include "GLFW/glfw3.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 
 namespace yagi {
 
-Context::Context(const glm::ivec2 &gl_version) {
+Context::Context(GLFWwindow *glfw_window, const glm::ivec2 &gl_version) {
   gl_ = std::make_unique<GladGLContext>();
   auto glad_version = gladLoadGLContext(gl_.get(), glfwGetProcAddress);
   if (glad_version == 0) {
@@ -20,6 +20,33 @@ Context::Context(const glm::ivec2 &gl_version) {
 
   if (glad_major != gl_version.x || glad_minor != gl_version.y)
     YAGI_LOG_WARN("Requested OpenGL v{}.{}", gl_version.x, gl_version.y);
+
+  gl_->Enable(GL_DEBUG_OUTPUT);
+  gl_->DebugMessageCallback(gl_message_callback_, nullptr);
+
+  initialize_imgui_(glfw_window);
+}
+
+Context::~Context() {
+  ImGui::DestroyContext(imgui_.ctx);
+}
+
+Context::Context(Context &&other) noexcept {
+  *this = std::move(other);
+}
+
+Context &Context::operator=(Context &&other) noexcept {
+  if (this != &other) {
+    ImGui::DestroyContext(imgui_.ctx);
+    gl_.reset();
+
+    gl_.swap(other.gl_);
+    std::swap(imgui_, other.imgui_);
+
+    other.imgui_.ctx = nullptr;
+    other.imgui_.io = nullptr;
+  }
+  return *this;
 }
 
 void Context::clear(const RGB &color, const ClearBit &bit) {
@@ -52,6 +79,74 @@ std::unique_ptr<VertexArray> Context::vertex_array(
 
 std::unique_ptr<GladGLContext> &Context::get_underlying_ctx() {
   return gl_;
+}
+
+void Context::initialize_imgui_(GLFWwindow *glfw_window) {
+  IMGUI_CHECKVERSION();
+  imgui_.ctx = ImGui::CreateContext();
+  imgui_.io = &ImGui::GetIO();
+  imgui_.io->IniFilename = nullptr;
+
+  ImGui_ImplGlfw_InitForOpenGL(glfw_window, true);
+  ImGui_ImplOpenGL3_Init();
+
+  YAGI_LOG_DEBUG("Initialized ImGui");
+}
+
+void GLAPIENTRY Context::gl_message_callback_(
+    GLenum source,
+    GLenum type,
+    GLuint id,
+    GLenum severity,
+    GLsizei,
+    const GLchar *message,
+    const void *
+) {
+#define STRINGIFY(e) case e: return #e;
+  std::string source_str = ([source](){
+    switch (source) {
+      STRINGIFY(GL_DEBUG_SOURCE_API)
+      STRINGIFY(GL_DEBUG_SOURCE_WINDOW_SYSTEM)
+      STRINGIFY(GL_DEBUG_SOURCE_SHADER_COMPILER)
+      STRINGIFY(GL_DEBUG_SOURCE_THIRD_PARTY)
+      STRINGIFY(GL_DEBUG_SOURCE_APPLICATION)
+      STRINGIFY(GL_DEBUG_SOURCE_OTHER)
+      default: return "?";
+    }
+  })();
+
+  std::string type_str = ([type](){
+    switch (type) {
+      STRINGIFY(GL_DEBUG_TYPE_ERROR)
+      STRINGIFY(GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR)
+      STRINGIFY(GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR)
+      STRINGIFY(GL_DEBUG_TYPE_PORTABILITY)
+      STRINGIFY(GL_DEBUG_TYPE_PERFORMANCE)
+      STRINGIFY(GL_DEBUG_TYPE_MARKER)
+      STRINGIFY(GL_DEBUG_TYPE_PUSH_GROUP)
+      STRINGIFY(GL_DEBUG_TYPE_POP_GROUP)
+      STRINGIFY(GL_DEBUG_TYPE_OTHER)
+      default: return "?";
+    }
+  })();
+
+  switch (severity) {
+    case GL_DEBUG_SEVERITY_HIGH:
+      YAGI_LOG_ERROR("OpenGL: source={} type={} id={} msg={}", source_str, type_str, id, message);
+      break;
+    case GL_DEBUG_SEVERITY_MEDIUM:
+      YAGI_LOG_WARN("OpenGL: source={} type={} id={} msg={}", source_str, type_str, id, message);
+      break;
+    case GL_DEBUG_SEVERITY_LOW:
+      YAGI_LOG_DEBUG("OpenGL: source={} type={} id={} msg={}", source_str, type_str, id, message);
+      break;
+    case GL_DEBUG_SEVERITY_NOTIFICATION:
+      YAGI_LOG_TRACE("OpenGL: source={} type={} id={} msg={}", source_str, type_str, id, message);
+      break;
+    default:
+      break; // won't happen
+  }
+#undef STRINGIFY
 }
 
 } // namespace yagi

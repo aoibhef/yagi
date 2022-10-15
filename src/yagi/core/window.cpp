@@ -33,7 +33,7 @@ void Window::open(const WindowOpenParams &params) {
 }
 
 std::unique_ptr<Context> Window::create_ctx() {
-  return std::make_unique<Context>(wm_info_.gl_version);
+  return std::make_unique<Context>(glfw_handle, wm_info_.gl_version);
 }
 
 bool Window::should_close() const {

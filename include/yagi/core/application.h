@@ -17,8 +17,6 @@ public:
   virtual void deinitialize();
   virtual void update(double dt);
   virtual void draw();
-
-private:
 };
 
 } // namespace yagi
