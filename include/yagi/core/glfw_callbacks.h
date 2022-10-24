@@ -28,7 +28,7 @@ void window_refresh_callback(GLFWwindow *window);
 
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 
-void character_callback(GLFWwindow *window, unsigned int codepoint, int mods);
+void character_callback(GLFWwindow *window, unsigned int codepoint);
 
 void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
 

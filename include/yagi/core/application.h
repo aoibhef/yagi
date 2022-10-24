@@ -1,6 +1,7 @@
 #ifndef YAGI_APP_APPLICATION_H
 #define YAGI_APP_APPLICATION_H
 
+#include "yagi/core/inputmgr.h"
 #include "yagi/core/window.h"
 #include "yagi/msg/bus.h"
 #include "yagi/util/framecounter.h"
@@ -31,6 +32,7 @@ class Application {
 public:
   std::unique_ptr<Window> window{nullptr};
   std::unique_ptr<Context> ctx{nullptr};
+  std::unique_ptr<InputMgr> input{nullptr};
 
   Application();
 
@@ -58,6 +60,8 @@ private:
   void draw_();
   void draw_debug_overlay_();
   void end_frame_();
+
+  void post_draw_();
 
   void imgui_start_frame_();
   void imgui_end_frame_();

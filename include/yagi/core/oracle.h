@@ -34,7 +34,8 @@ void Oracle::run_application() {
 
     application_->draw_();
 
-    glfwPollEvents();
+    application_->post_draw_();
+
     Bus::poll_all();
   } while (!application_->window->should_close());
 

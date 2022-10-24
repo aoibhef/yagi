@@ -13,6 +13,7 @@ Application::Application() {
   Bus::subscribe(msg_endpoint_id_, MsgType::ImguiLog);
 
   window = std::make_unique<Window>();
+  input = std::make_unique<InputMgr>();
 }
 
 void Application::initialize() {}
@@ -27,7 +28,7 @@ void Application::app_debug_overlay_enabled(bool enabled) {
 void Application::received_msg_(const Msg &msg) {
   std::visit(overloaded {
       [&](const ImguiLog &m) { overlay.log.add("%s", m.msg.c_str()); },
-      [&](const auto &m) { YAGI_LOG_WARN("Unhandled event {}", msg.type); }
+      [&](const auto &) { YAGI_LOG_WARN("Unhandled event {}", msg.type); }
   }, msg.data);
 }
 
@@ -79,6 +80,12 @@ void Application::end_frame_() {
   imgui_end_frame_();
 
   window->swap();
+}
+
+void Application::post_draw_() {
+  input->update(framecounter_.dt());
+  
+  glfwPollEvents();
 }
 
 void Application::imgui_start_frame_() {

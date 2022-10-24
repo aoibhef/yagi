@@ -8,7 +8,7 @@ public:
 
   void initialize() override {
     window->open({.title = "Indev",
-                  .size = {1280, 720},
+                  .size = {1600, 900},
                   .flags = yagi::WindowFlags::centered});
     app_debug_overlay_enabled(true);
 
@@ -53,7 +53,16 @@ void main() {
     });
   }
 
-  void update(double dt) override {}
+  void update(double dt) override {
+    if (input->pressed("a"))
+      YAGI_LOG_INFO("Pressed A!");
+
+    if (input->released("a"))
+      YAGI_LOG_INFO("Released A!");
+
+    if (input->down("a", 0.5, 2.0))
+      YAGI_LOG_INFO("Holding A!");
+  }
 
   void draw() override {
     ctx->clear(yagi::rgb(0x000000));

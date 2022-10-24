@@ -1,5 +1,6 @@
 set(YAGI_INCLUDE_FILES ${YAGI_INCLUDE_FILES}
         include/yagi/core/application.h
+        include/yagi/core/inputmgr.h
         include/yagi/core/glfw_callbacks.h
         include/yagi/core/oracle.h
         include/yagi/core/window.h
