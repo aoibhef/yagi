@@ -1,4 +1,5 @@
 #include "yagi/msg/bus.h"
+#include "yagi/util/log.h"
 #include "yagi/util/rnd.h"
 
 namespace yagi {

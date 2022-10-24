@@ -11,6 +11,9 @@ set(YAGI_EXTERNAL_INCLUDE_FILES ${YAGI_EXTERNAL_INCLUDE_FILES}
         external/imgui/imstb_textedit.h
         external/imgui/imstb_truetype.h
 
+        external/implot/implot.h
+        external/implot/implot_internal.h
+
         external/pcg-cpp/include/pcg_extras.hpp
         external/pcg-cpp/include/pcg_random.hpp
         external/pcg-cpp/include/pcg_uint128.hpp)
@@ -24,7 +27,11 @@ set(YAGI_EXTERNAL_SRC_FILES ${YAGI_EXTERNAL_SRC_FILES}
         external/imgui/imgui_demo.cpp
         external/imgui/imgui_draw.cpp
         external/imgui/imgui_tables.cpp
-        external/imgui/imgui_widgets.cpp)
+        external/imgui/imgui_widgets.cpp
+
+        external/implot/implot.cpp
+        external/implot/implot_demo.cpp
+        external/implot/implot_items.cpp)
 
 add_subdirectory(external/fmt)
 

@@ -13,6 +13,7 @@
 #include "GLFW/glfw3.h"
 #include "glm/glm.hpp"
 #include "imgui.h"
+#include "implot.h"
 #include <concepts>
 #include <memory>
 
@@ -73,6 +74,10 @@ private:
     ImGuiContext *ctx{nullptr};
     ImGuiIO *io{nullptr};
   } imgui_{};
+
+  struct {
+    ImPlotContext *ctx{nullptr};
+  } implot_{};
 
   void initialize_imgui_(GLFWwindow *glfw_window);
 

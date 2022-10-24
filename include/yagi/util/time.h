@@ -1,12 +1,34 @@
 #ifndef YAGI_UTIL_TIME_H
 #define YAGI_UTIL_TIME_H
 
+#include <chrono>
+#include <cstddef>
+
 namespace yagi {
 
-double time_nsec();
-double time_usec();
-double time_msec();
-double time_sec();
+template <typename T = std::uint64_t>
+T time_nsec() {
+  using namespace std::chrono;
+
+  auto now = steady_clock::now();
+  auto nsecs = duration_cast<nanoseconds>(now.time_since_epoch()).count();
+  return static_cast<T>(nsecs);
+}
+
+template <typename T = double>
+T time_usec() {
+  return static_cast<T>(time_nsec<double>() / 1e3);
+}
+
+template <typename T = double>
+T time_msec() {
+  return static_cast<T>(time_nsec<double>() / 1e6);
+}
+
+template <typename T = double>
+T time_sec() {
+  return static_cast<T>(time_nsec<double>() / 1e9);
+}
 
 } // namespace yagi
 

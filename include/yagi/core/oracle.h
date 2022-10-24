@@ -2,7 +2,6 @@
 #define YAGI_APP_ORACLE_H
 
 #include "yagi/core/application.h"
-#include "yagi/util/ticker.h"
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
 #include <memory>
@@ -30,15 +29,10 @@ void Oracle::run_application() {
   application_ = std::make_unique<T>();
   application_->initialize();
 
-  auto dt = Ticker();
-
   do {
-    dt.tick();
+    application_->update_();
 
-    application_->update(dt.dt_sec());
-    application_->draw();
-
-    application_->window->swap();
+    application_->draw_();
 
     glfwPollEvents();
     Bus::poll_all();

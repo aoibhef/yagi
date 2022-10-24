@@ -4,7 +4,7 @@
 
 namespace yagi {
 
-Ticker::Ticker(double interval) : interval_(interval * 1e9) {
+Ticker::Ticker(double interval) : interval_(static_cast<std::uint64_t>(interval * 1e9)) {
   start_ = time_nsec();
   last_ = start_;
 }
@@ -16,7 +16,7 @@ std::uint64_t Ticker::tick() {
 
   std::uint64_t tick_count = 0;
 
-  if (interval_ > 0.0) {
+  if (interval_ > 0) {
     acc_ += dt_;
     while (acc_ >= interval_) {
       acc_ -= interval_;

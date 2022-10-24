@@ -25,6 +25,7 @@ void Window::open(const WindowOpenParams &params) {
   internal::register_glfw_callbacks(glfw_handle);
 
   glfwMakeContextCurrent(glfw_handle);
+  glfwSwapInterval(set(params.flags, yagi::WindowFlags::vsync) ? 1 : 0);
 
   if (!set(params.flags, WindowFlags::fullscreen) &&
       !set(params.flags, WindowFlags::borderless) &&

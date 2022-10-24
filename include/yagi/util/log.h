@@ -5,11 +5,25 @@
 #if !defined(SPDLOG_ACTIVE_LEVEL)
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_INFO
 #endif
+#include "yagi/msg/bus.h"
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/ansicolor_sink.h"
+#include "spdlog/sinks/base_sink.h"
 #include <memory>
 
 namespace yagi {
+
+template<typename Mutex>
+class YagiImguiLogSink : public spdlog::sinks::base_sink<Mutex> {
+protected:
+  void sink_it_(const spdlog::details::log_msg& msg) override {
+    spdlog::memory_buf_t formatted;
+    spdlog::sinks::base_sink<Mutex>::formatter_->format(msg, formatted);
+    yagi::Bus::send<yagi::MsgType::ImguiLog>(fmt::to_string(formatted));
+  }
+
+  void flush_() override { /* do nothing */ }
+};
 
 std::shared_ptr<spdlog::logger> logger();
 
