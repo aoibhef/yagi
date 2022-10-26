@@ -23,13 +23,14 @@ jobs:
         submodules: recursive
     
     - name: Install gcc
+      if: runner.os == 'Linux'
       uses: egor-tensin/setup-gcc@v1
       with:
         version: 11
         
     - name: Install system dependencies
       if: runner.os == 'Linux'
-      run: sudo apt update && sudo apt install xorg-dev -y
+      run: sudo apt update && sudo apt install xorg-dev
 
     - name: Configure cmake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
