@@ -4,7 +4,7 @@
 namespace yagi {
 
 VertexArray::VertexArray(
-    std::unique_ptr<GladGLContext> &gl,
+    GladGLContext &gl,
     Shader &shader,
     const std::vector<BufAttrs> &buf_attrs
 ) : gl_(gl) {
@@ -24,34 +24,34 @@ VertexArray &VertexArray::operator=(VertexArray &&other) noexcept {
   if (this != &other) {
     del_id_();
 
-    gl_.swap(other.gl_);
+    std::swap(gl_, other.gl_);
     std::swap(id, other.id);
   }
   return *this;
 }
 
 void VertexArray::bind() const {
-  gl_->BindVertexArray(id);
+  gl_.BindVertexArray(id);
 }
 
 void VertexArray::unbind() const {
-  gl_->BindVertexArray(0);
+  gl_.BindVertexArray(0);
 }
 
 void VertexArray::draw_arrays(const DrawMode &mode, GLint first, GLsizei count) {
   bind();
-  gl_->DrawArrays(unwrap(mode), first, count);
+  gl_.DrawArrays(unwrap(mode), first, count);
   unbind();
 }
 
 void VertexArray::gen_id_() {
-  gl_->GenVertexArrays(1, &id);
+  gl_.GenVertexArrays(1, &id);
   YAGI_LOG_TRACE("Generated vertex array ({})", id);
 }
 
 void VertexArray::del_id_() {
   if (id != 0) {
-    gl_->DeleteVertexArrays(1, &id);
+    gl_.DeleteVertexArrays(1, &id);
     YAGI_LOG_TRACE("Deleted vertex array ({})", id);
   }
 }
@@ -68,7 +68,7 @@ void VertexArray::process_buf_attrs_(Shader &shader, const std::vector<BufAttrs>
       GLint loc = shader.get_attrib_loc(attr.name);
       GLsizei type_size = (attr.type_size != -1) ? attr.type_size : attr_type_size[attr.type];
 
-      gl_->VertexAttribPointer(
+      gl_.VertexAttribPointer(
           loc,
           attr.size,
           unwrap(attr.type),
@@ -76,7 +76,7 @@ void VertexArray::process_buf_attrs_(Shader &shader, const std::vector<BufAttrs>
           attr.stride * type_size,
           reinterpret_cast<void *>(attr.offset * type_size)
       );
-      gl_->EnableVertexAttribArray(loc);
+      gl_.EnableVertexAttribArray(loc);
 
       YAGI_LOG_TRACE(
           "Vertex attribute for buf {}: {} {} {} {} {}{}{} {}",

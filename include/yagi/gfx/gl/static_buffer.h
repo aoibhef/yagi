@@ -15,7 +15,7 @@ template <Numeric T>
 class StaticBuffer : public BufferBase {
 public:
   StaticBuffer(
-      std::unique_ptr<GladGLContext> &gl,
+      GladGLContext &gl,
       const BufTarget &target,
       const BufUsage &usage,
       const std::vector<T> &data
@@ -38,7 +38,7 @@ public:
 
 template <Numeric T>
 StaticBuffer<T>::StaticBuffer(
-    std::unique_ptr<GladGLContext> &gl,
+    GladGLContext &gl,
     const BufTarget &target,
     const BufUsage &usage,
     const std::vector<T> &data
@@ -52,22 +52,22 @@ StaticBuffer<T>::StaticBuffer(StaticBuffer &&other) noexcept : BufferBase(std::m
 }
 
 template <Numeric T>
+StaticBuffer<T> &StaticBuffer<T>::operator=(StaticBuffer &&other) noexcept {
+  if (this != &other) {
+    BufferBase::operator=(std::move(other));
+  }
+  return *this;
+}
+
+template <Numeric T>
 void StaticBuffer<T>::write(
     const BufTarget &target,
     const BufUsage &usage,
     const std::vector<T> &data
 ) {
   bind(target);
-  gl_->BufferData(unwrap(target), sizeof(T) * data.size(), &data[0], unwrap(usage));
+  gl_.BufferData(unwrap(target), sizeof(T) * data.size(), &data[0], unwrap(usage));
   unbind(target);
-}
-
-template <Numeric T>
-StaticBuffer<T> &StaticBuffer<T>::operator=(StaticBuffer &&other) noexcept {
-  if (this != &other) {
-    BufferBase::operator=(std::move(other));
-  }
-  return *this;
 }
 
 } // namespace yagi

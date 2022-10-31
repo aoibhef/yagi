@@ -61,7 +61,7 @@ public:
   GLuint id{};
 
   VertexArray(
-      std::unique_ptr<GladGLContext> &gl,
+      GladGLContext &gl,
       Shader &shader,
       const std::vector<BufAttrs> &buf_attrs
   );
@@ -80,7 +80,7 @@ public:
   void draw_arrays(const DrawMode &mode, GLint first, GLsizei count);
 
 private:
-  std::unique_ptr<GladGLContext> &gl_;
+  GladGLContext &gl_;
 
   void gen_id_();
   void del_id_();

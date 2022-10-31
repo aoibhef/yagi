@@ -15,7 +15,7 @@ public:
   GLuint id{0};
   std::string tag{};
 
-  explicit Shader(std::unique_ptr<GladGLContext> &gl);
+  explicit Shader(GladGLContext &gl);
   ~Shader();
 
   // Copy constructors don't make sense for OpenGL objects
@@ -77,7 +77,7 @@ public:
   void uniform_mat4x3d(const std::string &name, glm::dmat4x3 v, bool transpose = false);
 
 private:
-  std::unique_ptr<GladGLContext> &gl_;
+  GladGLContext &gl_;
 
   std::unordered_map<std::string, GLint> attrib_locs_{};
   std::unordered_map<std::string, GLint> uniform_locs_{};
@@ -89,7 +89,7 @@ private:
 
 class ShaderBuilder {
 public:
-  ShaderBuilder(std::unique_ptr<GladGLContext> &gl, const std::string &tag);
+  ShaderBuilder(GladGLContext &gl, const std::string &tag);
 
   ~ShaderBuilder() = default;
 
@@ -110,7 +110,7 @@ public:
   std::unique_ptr<Shader> link();
 
 private:
-  std::unique_ptr<GladGLContext> &gl_;
+  GladGLContext &gl_;
 
   GLuint vert_id_{0u};
   GLuint frag_id_{0u};

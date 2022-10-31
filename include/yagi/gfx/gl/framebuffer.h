@@ -160,7 +160,7 @@ public:
   GLuint id{0};
   GLsizei width{0}, height{0};
 
-  Framebuffer(std::unique_ptr<GladGLContext> &gl);
+  Framebuffer(GladGLContext &gl);
 
   ~Framebuffer();
 
@@ -182,7 +182,7 @@ public:
   void use_texture(const std::string &tex_name);
 
 private:
-  std::unique_ptr<GladGLContext> &gl_;
+  GladGLContext &gl_;
 
   std::unordered_map<std::string, GLuint> tex_attachments_{};
   std::unordered_map<std::string, GLuint> rbo_attachments_{};
@@ -192,7 +192,7 @@ private:
 
 class FramebufferBuilder {
 public:
-  FramebufferBuilder(std::unique_ptr<GladGLContext> &gl, GLsizei width, GLsizei height);
+  FramebufferBuilder(GladGLContext &gl, GLsizei width, GLsizei height);
 
   ~FramebufferBuilder() = default;
 
@@ -211,7 +211,7 @@ public:
   std::unique_ptr<Framebuffer> check_complete();
 
 private:
-  std::unique_ptr<GladGLContext> &gl_;
+  GladGLContext &gl_;
 
   GLuint id_{0};
   GLsizei width_{0}, height_{0};

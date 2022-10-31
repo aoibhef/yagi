@@ -4,7 +4,7 @@
 
 namespace yagi {
 
-BufferBase::BufferBase(std::unique_ptr<GladGLContext> &gl) : gl_(gl) {
+BufferBase::BufferBase(GladGLContext &gl) : gl_(gl) {
   gen_id_();
 }
 
@@ -20,28 +20,28 @@ BufferBase &BufferBase::operator=(BufferBase &&other) noexcept {
   if (this != &other) {
     del_id_();
 
-    gl_.swap(other.gl_);
+    std::swap(gl_, other.gl_);
     std::swap(id, other.id);
   }
   return *this;
 }
 
 void BufferBase::bind(const BufTarget &target) const {
-  gl_->BindBuffer(unwrap(target), id);
+  gl_.BindBuffer(unwrap(target), id);
 }
 
 void BufferBase::unbind(const BufTarget &target) const {
-  gl_->BindBuffer(unwrap(target), 0);
+  gl_.BindBuffer(unwrap(target), 0);
 }
 
 void BufferBase::gen_id_() {
-  gl_->GenBuffers(1, &id);
+  gl_.GenBuffers(1, &id);
   YAGI_LOG_TRACE("Generated buffer ({})", id);
 }
 
 void BufferBase::del_id_() {
   if (id != 0) {
-    gl_->DeleteBuffers(1, &id);
+    gl_.DeleteBuffers(1, &id);
     YAGI_LOG_TRACE("Deleted buffer ({})", id);
   }
 }
