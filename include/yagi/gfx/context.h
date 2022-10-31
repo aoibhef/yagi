@@ -9,7 +9,10 @@
 #include "yagi/util/enum_bitmask_ops.h"
 #include "yagi/util/log.h"
 #include "glad/gl.h"
+#define GLFW_INCLUDE_NONE
+#include "GLFW/glfw3.h"
 #include "glm/glm.hpp"
+#include "imgui.h"
 #include <concepts>
 #include <memory>
 
@@ -29,8 +32,16 @@ namespace yagi {
 
 class Context {
 public:
-  explicit Context(const glm::ivec2 &gl_version);
+  explicit Context(GLFWwindow *glfw_window, const glm::ivec2 &gl_version);
+  ~Context();
 
+  // Copy constructors don't make sense for OpenGL objects
+  Context(const Context &) = delete;
+  Context &operator=(const Context &) = delete;
+
+  Context(Context &&other) noexcept;
+  Context &operator=(Context &&other) noexcept;
+  
   void clear(const RGB &color, const ClearBit &bit = yagi::ClearBit::color | yagi::ClearBit::depth);
 
   ShaderBuilder shader();
@@ -40,9 +51,9 @@ public:
 
   template <Numeric T>
   std::unique_ptr<StaticBuffer<T>> static_buffer(
-      const std::vector<T> &data,
       const BufTarget &target,
-      const BufUsage &usage
+      const BufUsage &usage,
+      const std::vector<T> &data
   );
 
   std::unique_ptr<VertexArray> vertex_array(
@@ -57,15 +68,32 @@ public:
 
 private:
   std::unique_ptr<GladGLContext> gl_{nullptr};
+
+  struct {
+    ImGuiContext *ctx{nullptr};
+    ImGuiIO *io{nullptr};
+  } imgui_{};
+
+  void initialize_imgui_(GLFWwindow *glfw_window);
+
+  static void GLAPIENTRY gl_message_callback_(
+      GLenum source,
+      GLenum type,
+      GLuint id,
+      GLenum severity,
+      GLsizei length,
+      const GLchar *message,
+      const void *userParam
+  );
 };
 
 template <Numeric T>
 std::unique_ptr<StaticBuffer<T>> Context::static_buffer(
-    const std::vector<T> &data,
     const BufTarget &target,
-    const BufUsage &usage
+    const BufUsage &usage,
+    const std::vector<T> &data
 ) {
-  return std::make_unique<StaticBuffer<T>>(gl_, data, target, usage);
+  return std::make_unique<StaticBuffer<T>>(gl_, target, usage, data);
 }
 
 } // namespace yagi

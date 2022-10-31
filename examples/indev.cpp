@@ -3,7 +3,7 @@
 class Indev : public yagi::Application {
 public:
   std::unique_ptr<yagi::Shader> shader{nullptr};
-  std::unique_ptr<yagi::StaticBuffer<float>> vertices{nullptr}, colors{nullptr};
+  std::unique_ptr<yagi::StaticBuffer<float>> vbo{nullptr};
   std::unique_ptr<yagi::VertexArray> vao{nullptr};
 
   void initialize() override {
@@ -39,25 +39,21 @@ void main() {
 )glsl")
         .link();
 
-    vertices = ctx->static_buffer<float>({
-         0.0,  0.5, 0.0,
-        -0.5, -0.5, 0.0,
-         0.5, -0.5, 0.0
-    }, yagi::BufTarget::array, yagi::BufUsage::static_draw);
-
-    colors = ctx->static_buffer<float>({
-        1.0, 0.0, 0.0, 1.0,
-        0.0, 1.0, 0.0, 1.0,
-        0.0, 0.0, 1.0, 1.0
-    }, yagi::BufTarget::array, yagi::BufUsage::static_draw);
+    vbo = ctx->static_buffer<float>(yagi::BufTarget::array, yagi::BufUsage::static_draw, {
+         0.0,  0.5, 0.0,   1.0, 0.0, 0.0, 1.0,
+        -0.5, -0.5, 0.0,   0.0, 1.0, 0.0, 1.0,
+         0.5, -0.5, 0.0,   0.0, 0.0, 1.0, 1.0
+    });
 
     vao = ctx->vertex_array(*shader, {
-        {*vertices, {{"in_pos", 3, yagi::AttrType::f, false, 3, 0}}},
-        {*colors, {{"in_color", 4, yagi::AttrType::f, false, 4, 0}}}
+        {*vbo, {{"in_pos", 3, yagi::AttrType::f, false, 7, 0},
+                {"in_color", 4, yagi::AttrType::f, false, 7, 3}}}
     });
   }
 
-  void update(double dt) override {}
+  void update(double dt) override {
+
+  }
 
   void draw() override {
     ctx->clear(yagi::rgb(0x000000));
@@ -68,6 +64,4 @@ void main() {
   }
 };
 
-int main(int, char *[]) {
-  yagi::Oracle().run_application<Indev>();
-}
+YAGI_CONSULT_ORACLE(Indev)

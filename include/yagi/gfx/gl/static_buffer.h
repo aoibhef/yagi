@@ -16,9 +16,10 @@ class StaticBuffer : public BufferBase {
 public:
   StaticBuffer(
       std::unique_ptr<GladGLContext> &gl,
-      const std::vector<T> &data,
       const BufTarget &target,
-      const BufUsage &usage);
+      const BufUsage &usage,
+      const std::vector<T> &data
+  );
   ~StaticBuffer() override = default;
 
   // Copy constructors don't make sense for OpenGL objects
@@ -29,18 +30,20 @@ public:
   StaticBuffer &operator=(StaticBuffer &&other) noexcept;
 
   void write(
-      const std::vector<T> &data,
       const BufTarget &target,
-      const BufUsage &usage);
+      const BufUsage &usage,
+      const std::vector<T> &data
+  );
 };
 
 template <Numeric T>
 StaticBuffer<T>::StaticBuffer(
     std::unique_ptr<GladGLContext> &gl,
-    const std::vector<T> &data,
     const BufTarget &target,
-    const BufUsage &usage) : BufferBase(gl) {
-  write(data, target, usage);
+    const BufUsage &usage,
+    const std::vector<T> &data
+) : BufferBase(gl) {
+  write(target, usage, data);
 }
 
 template <Numeric T>
@@ -50,9 +53,10 @@ StaticBuffer<T>::StaticBuffer(StaticBuffer &&other) noexcept : BufferBase(std::m
 
 template <Numeric T>
 void StaticBuffer<T>::write(
-    const std::vector<T> &data,
     const BufTarget &target,
-    const BufUsage &usage) {
+    const BufUsage &usage,
+    const std::vector<T> &data
+) {
   bind(target);
   gl_->BufferData(unwrap(target), sizeof(T) * data.size(), &data[0], unwrap(usage));
   unbind(target);
