@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/external/fmt" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/external/glfw" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/external/glm" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/external/imgui" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/external/implot" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/external/libnyquist" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/external/openal-soft" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/external/pcg-cpp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/external/spdlog" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/external/stduuid" vcs="Git" />
+  </component>
+</project>
