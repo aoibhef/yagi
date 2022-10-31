@@ -39,7 +39,7 @@ enum class BufUsage {
 
 class BufferBase {
 protected:
-  std::unique_ptr<GladGLContext> &gl_;
+  GladGLContext &gl_;
 
   void gen_id_();
   void del_id_();
@@ -47,7 +47,7 @@ protected:
 public:
   GLuint id{};
 
-  explicit BufferBase(std::unique_ptr<GladGLContext> &gl);
+  explicit BufferBase(GladGLContext &gl);
   virtual ~BufferBase();
 
   // Copy constructors don't make sense for OpenGL objects

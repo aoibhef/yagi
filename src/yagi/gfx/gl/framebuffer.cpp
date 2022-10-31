@@ -5,31 +5,22 @@
 
 namespace yagi {
 
-Framebuffer::Framebuffer(std::unique_ptr<GladGLContext> &gl) : gl_(gl) {}
+Framebuffer::Framebuffer(GladGLContext &gl) : gl_(gl) {}
 
 Framebuffer::~Framebuffer() {
   del_id_();
 }
 
 Framebuffer::Framebuffer(Framebuffer &&other) noexcept : gl_(other.gl_) {
-  id = other.id;
-  width = other.width;
-  height = other.height;
-  tex_attachments_ = std::move(other.tex_attachments_);
-  rbo_attachments_ = std::move(other.rbo_attachments_);
-
-  other.id = 0;
-  other.width = 0;
-  other.height = 0;
-  other.tex_attachments_.clear();
-  other.rbo_attachments_.clear();
+  *this = std::move(other);
 }
 
 Framebuffer &Framebuffer::operator=(Framebuffer &&other) noexcept {
   if (this != &other) {
     del_id_();
 
-    gl_.swap(other.gl_);
+    std::swap(gl_, other.gl_);
+
     id = other.id;
     width = other.width;
     height = other.height;
@@ -46,45 +37,45 @@ Framebuffer &Framebuffer::operator=(Framebuffer &&other) noexcept {
 }
 
 void Framebuffer::bind() {
-  gl_->BindFramebuffer(GL_FRAMEBUFFER, id);
-  gl_->Viewport(0, 0, width, height);
+  gl_.BindFramebuffer(GL_FRAMEBUFFER, id);
+  gl_.Viewport(0, 0, width, height);
 }
 
 void Framebuffer::bind(FboTarget target) {
-  gl_->BindFramebuffer(unwrap(target), id);
+  gl_.BindFramebuffer(unwrap(target), id);
 }
 
 void Framebuffer::unbind() {
-  gl_->BindFramebuffer(GL_FRAMEBUFFER, 0);
+  gl_.BindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Framebuffer::copy_to_default_framebuffer(bool retro) {
   bind(FboTarget::read);
-  gl_->BindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-  gl_->BlitFramebuffer(
+  gl_.BindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+  gl_.BlitFramebuffer(
       0, 0, width, height,
       0, 0, width, height,
       GL_COLOR_BUFFER_BIT, retro ? GL_NEAREST : GL_LINEAR
   );
-  gl_->BindFramebuffer(unwrap(FboTarget::read), 0);
-  gl_->BindFramebuffer(unwrap(FboTarget::draw), 0);
+  gl_.BindFramebuffer(unwrap(FboTarget::read), 0);
+  gl_.BindFramebuffer(unwrap(FboTarget::draw), 0);
 }
 
 void Framebuffer::copy_to_default_framebuffer(GLint window_width, GLint window_height, bool retro) {
   bind(FboTarget::read);
-  gl_->BindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-  gl_->BlitFramebuffer(
+  gl_.BindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+  gl_.BlitFramebuffer(
       0, 0, width, height,
       0, 0, window_width, window_height,
       GL_COLOR_BUFFER_BIT, retro ? GL_NEAREST : GL_LINEAR
   );
-  gl_->BindFramebuffer(unwrap(FboTarget::read), 0);
-  gl_->BindFramebuffer(unwrap(FboTarget::draw), 0);
+  gl_.BindFramebuffer(unwrap(FboTarget::read), 0);
+  gl_.BindFramebuffer(unwrap(FboTarget::draw), 0);
 }
 
 void Framebuffer::use_texture(const std::string &tex_name) {
   // TODO: error check
-  gl_->BindTexture(GL_TEXTURE_2D, tex_attachments_[tex_name]);
+  gl_.BindTexture(GL_TEXTURE_2D, tex_attachments_[tex_name]);
 }
 
 void Framebuffer::del_id_() {
@@ -92,34 +83,34 @@ void Framebuffer::del_id_() {
     YAGI_LOG_TRACE("Deleting framebuffer ({})", id);
     for (auto &p: tex_attachments_) {
       YAGI_LOG_TRACE("FBO/Deleting texture ({} / {})", p.second, id);
-      gl_->DeleteTextures(1, &p.second);
+      gl_.DeleteTextures(1, &p.second);
     }
     for (auto &p: rbo_attachments_) {
       YAGI_LOG_TRACE("FBO/Deleting renderbuffer ({} / {})", p.second, id);
-      gl_->DeleteRenderbuffers(1, &p.second);
+      gl_.DeleteRenderbuffers(1, &p.second);
     }
-    gl_->DeleteFramebuffers(1, &id);
+    gl_.DeleteFramebuffers(1, &id);
   }
 }
 
-FramebufferBuilder::FramebufferBuilder(std::unique_ptr<GladGLContext> &gl, GLsizei width, GLsizei height)
+FramebufferBuilder::FramebufferBuilder(GladGLContext &gl, GLsizei width, GLsizei height)
     : gl_(gl), width_(width), height_(height) {
   gen_id_();
-  gl_->BindFramebuffer(GL_FRAMEBUFFER, id_);
+  gl_.BindFramebuffer(GL_FRAMEBUFFER, id_);
 }
 
 FramebufferBuilder &FramebufferBuilder::texture(const std::string &tag, TexFormat internalformat, bool retro) {
   GLuint tex;
-  gl_->GenTextures(1, &tex);
+  gl_.GenTextures(1, &tex);
   YAGI_LOG_TRACE("FBO/Generated texture ({})", tex);
 
-  gl_->BindTexture(GL_TEXTURE_2D, tex);
-  gl_->TexStorage2D(GL_TEXTURE_2D, 1, unwrap(internalformat), width_, height_);
-  gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, retro ? GL_NEAREST : GL_LINEAR);
-  gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, retro ? GL_NEAREST : GL_LINEAR);
-  gl_->BindTexture(GL_TEXTURE_2D, 0);
+  gl_.BindTexture(GL_TEXTURE_2D, tex);
+  gl_.TexStorage2D(GL_TEXTURE_2D, 1, unwrap(internalformat), width_, height_);
+  gl_.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, retro ? GL_NEAREST : GL_LINEAR);
+  gl_.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, retro ? GL_NEAREST : GL_LINEAR);
+  gl_.BindTexture(GL_TEXTURE_2D, 0);
 
-  gl_->FramebufferTexture2D(
+  gl_.FramebufferTexture2D(
       GL_FRAMEBUFFER,
       GL_COLOR_ATTACHMENT0,
       GL_TEXTURE_2D,
@@ -138,14 +129,14 @@ FramebufferBuilder &FramebufferBuilder::texture(TexFormat format) {
 
 FramebufferBuilder &FramebufferBuilder::renderbuffer(const std::string &tag, RBufFormat internalformat) {
   GLuint rbo;
-  gl_->GenRenderbuffers(1, &rbo);
+  gl_.GenRenderbuffers(1, &rbo);
   YAGI_LOG_TRACE("FBO/Generated renderbuffer ({})", rbo);
 
-  gl_->BindRenderbuffer(GL_RENDERBUFFER, rbo);
-  gl_->RenderbufferStorage(GL_RENDERBUFFER, unwrap(internalformat), width_, height_);
-  gl_->BindRenderbuffer(GL_RENDERBUFFER, 0);
+  gl_.BindRenderbuffer(GL_RENDERBUFFER, rbo);
+  gl_.RenderbufferStorage(GL_RENDERBUFFER, unwrap(internalformat), width_, height_);
+  gl_.BindRenderbuffer(GL_RENDERBUFFER, 0);
 
-  gl_->FramebufferRenderbuffer(
+  gl_.FramebufferRenderbuffer(
       GL_FRAMEBUFFER,
       get_renderbuffer_attachment_type(unwrap(internalformat)),
       GL_RENDERBUFFER,
@@ -162,11 +153,11 @@ FramebufferBuilder &FramebufferBuilder::renderbuffer(RBufFormat internalformat) 
 }
 
 std::unique_ptr<Framebuffer> FramebufferBuilder::check_complete() {
-  if (gl_->CheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+  if (gl_.CheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     spdlog::error("Framebuffer is not complete");
   else
     YAGI_LOG_TRACE("Completed framebuffer ({})", id_);
-  gl_->BindFramebuffer(GL_FRAMEBUFFER, 0);
+  gl_.BindFramebuffer(GL_FRAMEBUFFER, 0);
 
   auto f = std::make_unique<Framebuffer>(gl_);
   f->id = id_;
@@ -179,7 +170,7 @@ std::unique_ptr<Framebuffer> FramebufferBuilder::check_complete() {
 }
 
 void FramebufferBuilder::gen_id_() {
-  gl_->GenFramebuffers(1, &id_);
+  gl_.GenFramebuffers(1, &id_);
   YAGI_LOG_TRACE("Generated framebuffer ({})", id_);
 }
 

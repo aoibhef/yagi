@@ -37,6 +37,9 @@ Context::Context(Context &&other) noexcept {
 }
 
 Context &Context::operator=(Context &&other) noexcept {
+  // TODO: This is definitely wrong, I think this will leave
+  //   the 'other' context in an unusable state with a void context
+
   if (this != &other) {
     ImGui::DestroyContext(imgui_.ctx);
     ImPlot::DestroyContext(implot_.ctx);
@@ -67,22 +70,22 @@ ShaderBuilder Context::shader() {
 }
 
 ShaderBuilder Context::shader(const std::string &tag) {
-  return {gl_, tag};
+  return {*gl_, tag};
 }
 
 FramebufferBuilder Context::framebuffer(GLsizei width, GLsizei height) {
-  return {gl_, width, height};
+  return {*gl_, width, height};
 }
 
 std::unique_ptr<VertexArray> Context::vertex_array(
     Shader &shader,
     const std::vector<BufAttrs> &buf_attrs
 ) {
-  return std::make_unique<VertexArray>(gl_, shader, buf_attrs);
+  return std::make_unique<VertexArray>(*gl_, shader, buf_attrs);
 }
 
-std::unique_ptr<GladGLContext> &Context::get_underlying_ctx() {
-  return gl_;
+GladGLContext &Context::get_underlying_ctx() {
+  return *gl_;
 }
 
 void Context::initialize_imgui_(GLFWwindow *glfw_window) {

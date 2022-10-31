@@ -62,10 +62,10 @@ public:
       const std::vector<BufAttrs> &buf_attrs
   );
 
-  template <std::invocable<std::unique_ptr<GladGLContext> &> T>
+  template <std::invocable<GladGLContext &> T>
   void run_block(T &&func) { func(gl_); }
 
-  std::unique_ptr<GladGLContext> &get_underlying_ctx();
+  GladGLContext &get_underlying_ctx();
 
 private:
   std::unique_ptr<GladGLContext> gl_{nullptr};
@@ -98,7 +98,7 @@ std::unique_ptr<StaticBuffer<T>> Context::static_buffer(
     const BufUsage &usage,
     const std::vector<T> &data
 ) {
-  return std::make_unique<StaticBuffer<T>>(gl_, target, usage, data);
+  return std::make_unique<StaticBuffer<T>>(*gl_, target, usage, data);
 }
 
 } // namespace yagi
