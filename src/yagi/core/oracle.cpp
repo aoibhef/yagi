@@ -1,6 +1,6 @@
-#include "yagi/core/oracle.h"
-
 #include "yagi/util/log.h"
+#include "yagi/core/oracle.h"
+#define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
 
 namespace yagi {
@@ -20,7 +20,6 @@ Oracle::Oracle() {
 
 Oracle::~Oracle() {
   glfwTerminate();
-  YAGI_LOG_DEBUG("Terminated GLFW");
 }
 
 } // namespace yagi

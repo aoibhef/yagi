@@ -1,9 +1,9 @@
 #ifndef YAGI_MSG_MSG_H
 #define YAGI_MSG_MSG_H
 
+#include "fmt/ostream.h"
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
-#include "fmt/ostream.h"
 #include <variant>
 
 namespace yagi {
@@ -203,6 +203,8 @@ inline std::ostream &operator<<(std::ostream &out, yagi::MsgType value) {
     STRINGIFY(Joystick)
     STRINGIFY(Drop)
     STRINGIFY(ImguiLog)
+    default:
+      return out << "yagi::MsgType::?";
   }
 #undef STRINGIFY
 }

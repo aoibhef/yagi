@@ -1,4 +1,4 @@
-#include "indev.h"
+#include "yagi/yagi.h"
 
 class Indev : public yagi::Application {
 public:

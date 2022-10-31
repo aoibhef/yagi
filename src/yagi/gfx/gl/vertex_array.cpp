@@ -1,5 +1,5 @@
-#include "yagi/gfx/gl/vertex_array.h"
 #include "yagi/util/log.h"
+#include "yagi/gfx/gl/vertex_array.h"
 
 namespace yagi {
 
@@ -86,7 +86,7 @@ void VertexArray::process_buf_attrs_(Shader &shader, const std::vector<BufAttrs>
           attr.size,
           attr.type,
           attr.normalized,
-          (attr.type_size != -1) ? " overriden " : " ",
+          (attr.type_size != -1) ? " overridden " : " ",
           attr.stride * type_size,
           attr.offset * type_size
       );

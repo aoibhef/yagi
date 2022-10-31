@@ -1,6 +1,6 @@
+#include "yagi/util/log.h"
 #include "yagi/gfx/gl/framebuffer.h"
 #include "yagi/util/enum_bitmask_ops.h"
-#include "yagi/util/log.h"
 #include "yagi/util/rnd.h"
 
 namespace yagi {

@@ -1,13 +1,13 @@
 #ifndef YAGI_GFX_CONTEXT_H
 #define YAGI_GFX_CONTEXT_H
 
+#include "yagi/util/log.h"
 #include "yagi/gfx/gl/framebuffer.h"
 #include "yagi/gfx/gl/shader.h"
 #include "yagi/gfx/gl/static_buffer.h"
 #include "yagi/gfx/gl/vertex_array.h"
 #include "yagi/gfx/color.h"
 #include "yagi/util/enum_bitmask_ops.h"
-#include "yagi/util/log.h"
 #include "glad/gl.h"
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"

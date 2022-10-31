@@ -1,5 +1,5 @@
-#include "yagi/core/application.h"
 #include "yagi/util/log.h"
+#include "yagi/core/application.h"
 #include "yagi/util/overloaded.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"

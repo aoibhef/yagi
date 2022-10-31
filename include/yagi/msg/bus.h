@@ -21,6 +21,11 @@ public:
   template<MsgType T, typename... Args>
   static void send(const Args &...args);
 
+  // This should be used sparingly, as it's effectively a
+  // disconnected function call that will create some bad spaghetti
+  template<MsgType T, typename... Args>
+  static void send_nowait(const Args &...args);
+
   static void poll(const std::string &id);
   static void poll_all();
 
@@ -34,6 +39,12 @@ template<MsgType T, typename... Args>
 void Bus::send(const Args &...args) {
   for (const auto &id : subscriptions_[T])
     queues_[id].push(Msg{T, typename Map<T>::type{args...}});
+}
+
+template<MsgType T, typename... Args>
+void Bus::send_nowait(const Args &...args) {
+  for (const auto &id : subscriptions_[T])
+    funcs_[id](Msg{T, typename Map<T>::type{args...}});
 }
 
 } // namespace yagi

@@ -36,12 +36,27 @@ struct WindowOpenParams {
 
 class Window {
 public:
+  // Attributes about the window as member variables rather than functions
+  // To change these, use the corresponding set_* call
+  int x{0}, y{0};
+  int w{0}, h{0};
+  bool borderless{false};
+  bool vsync{false};
+
   GLFWwindow *glfw_handle{nullptr};
 
   Window() = default;
 
   void open(const WindowOpenParams &params);
   std::unique_ptr<Context> create_ctx();
+
+  void set_x(int xpos);
+  void set_y(int ypos);
+
+  void set_w(int width);
+  void set_h(int height);
+
+  void set_vsync(int enabled);
 
   bool should_close() const;
 
@@ -54,8 +69,6 @@ private:
   void received_msg_(const Msg &msg);
 
   struct {
-    bool borderless{false};
-    bool vsync{false};
     glm::ivec2 gl_version{};
   } wm_info_;
 

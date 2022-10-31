@@ -1,5 +1,5 @@
-#include "yagi/core/inputmgr.h"
 #include "yagi/util/log.h"
+#include "yagi/core/inputmgr.h"
 #include "yagi/util/overloaded.h"
 
 namespace yagi {

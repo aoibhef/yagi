@@ -1,7 +1,6 @@
-#include "yagi/core/window.h"
-
-#include "yagi/core/glfw_callbacks.h"
 #include "yagi/util/log.h"
+#include "yagi/core/window.h"
+#include "yagi/core/glfw_callbacks.h"
 #include "yagi/util/overloaded.h"
 #include "yagi/util/platform.h"
 
@@ -10,6 +9,7 @@ namespace yagi {
 void Window::open(const WindowOpenParams &params) {
   msg_endpoint_id_ = Bus::register_endpoint([&](const Msg &msg) { received_msg_(msg); });
   Bus::subscribe(msg_endpoint_id_, MsgType::WindowPos);
+  Bus::subscribe(msg_endpoint_id_, MsgType::WindowSize);
 
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, params.gl_version.x);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, params.gl_version.y);
@@ -25,7 +25,9 @@ void Window::open(const WindowOpenParams &params) {
   internal::register_glfw_callbacks(glfw_handle);
 
   glfwMakeContextCurrent(glfw_handle);
-  glfwSwapInterval(set(params.flags, yagi::WindowFlags::vsync) ? 1 : 0);
+
+  vsync = set(params.flags, yagi::WindowFlags::vsync);
+  glfwSwapInterval(vsync ? 1 : 0);
 
   if (!set(params.flags, WindowFlags::fullscreen) &&
       !set(params.flags, WindowFlags::borderless) &&
@@ -35,6 +37,27 @@ void Window::open(const WindowOpenParams &params) {
 
 std::unique_ptr<Context> Window::create_ctx() {
   return std::make_unique<Context>(glfw_handle, wm_info_.gl_version);
+}
+
+void Window::set_x(int xpos) {
+  glfwSetWindowPos(glfw_handle, xpos, y);
+}
+
+void Window::set_y(int ypos) {
+  glfwSetWindowPos(glfw_handle, x, ypos);
+}
+
+void Window::set_w(int width) {
+  glfwSetWindowSize(glfw_handle, width, h);
+}
+
+void Window::set_h(int height) {
+  glfwSetWindowSize(glfw_handle, w, height);
+}
+
+void Window::set_vsync(int enabled) {
+  vsync = enabled;
+  glfwSwapInterval(vsync ? 1 : 0);
 }
 
 bool Window::should_close() const {
@@ -51,7 +74,14 @@ void Window::poll_msgs() {
 
 void Window::received_msg_(const Msg &msg) {
   std::visit(overloaded {
-      [&](const WindowPos &m) {},
+      [&](const WindowSize &m) {
+        w = m.width;
+        h = m.height;
+      },
+      [&](const WindowPos &m) {
+        x = m.xpos;
+        y = m.ypos;
+      },
       [&](const auto &m) { YAGI_LOG_WARN("Unhandled event {}", msg.type); }
   }, msg.data);
 }
@@ -79,7 +109,7 @@ void Window::open_fullscreen_(const WindowOpenParams &params) {
   glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
   if (set(params.flags, WindowFlags::borderless)) {
-    wm_info_.borderless = true;
+    borderless = true;
 
     glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_FALSE);
     glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
@@ -121,7 +151,7 @@ void Window::open_fullscreen_(const WindowOpenParams &params) {
   glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
   if (set(params.flags, WindowFlags::borderless)) {
-    wm_info_.borderless = true;
+    borderless = true;
 
     glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_FALSE);
   }
