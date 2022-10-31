@@ -3,7 +3,7 @@
 class Indev : public yagi::Application {
 public:
   std::unique_ptr<yagi::Shader> shader{nullptr};
-  GLuint vbo;
+  std::unique_ptr<yagi::StaticBuffer<float>> vbo{nullptr};
   GLuint vao;
 
   void initialize() override {
@@ -39,24 +39,23 @@ void main() {
 )glsl")
         .link();
 
-    const std::vector<float> data = {
+    const std::vector<float> vertices = {
          0.0,  0.5, 0.0,   1.0, 0.0, 0.0, 1.0,
         -0.5, -0.5, 0.0,   0.0, 1.0, 0.0, 1.0,
          0.5, -0.5, 0.0,   0.0, 0.0, 1.0, 1.0
     };
+    vbo = ctx->static_buffer<float>(vertices, yagi::BufTarget::array, yagi::BufUsage::static_draw);
 
     ctx->run_block([&](const std::unique_ptr<GladGLContext> &gl) {
       gl->GenVertexArrays(1, &vao);
       gl->BindVertexArray(vao);
 
-      gl->GenBuffers(1, &vbo);
-      gl->BindBuffer(GL_ARRAY_BUFFER, vbo);
-      gl->BufferData(GL_ARRAY_BUFFER, sizeof(float) * data.size(), &data[0], GL_STATIC_DRAW);
-
+      vbo->bind(yagi::BufTarget::array);
       gl->VertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), nullptr);
       gl->EnableVertexAttribArray(0);
       gl->VertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void *)(sizeof(float) * 3));
       gl->EnableVertexAttribArray(1);
+      vbo->unbind(yagi::BufTarget::array);
     });
   }
 

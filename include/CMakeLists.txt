@@ -4,8 +4,10 @@ set(YAGI_INCLUDE_FILES ${YAGI_INCLUDE_FILES}
         include/yagi/core/oracle.h
         include/yagi/core/window.h
 
+        include/yagi/gfx/gl/buffer_base.h
         include/yagi/gfx/gl/framebuffer.h
         include/yagi/gfx/gl/shader.h
+        include/yagi/gfx/gl/static_buffer.h
         include/yagi/gfx/color.h
         include/yagi/gfx/context.h
 

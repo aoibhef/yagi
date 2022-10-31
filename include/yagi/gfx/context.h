@@ -3,8 +3,10 @@
 
 #include "yagi/gfx/gl/framebuffer.h"
 #include "yagi/gfx/gl/shader.h"
+#include "yagi/gfx/gl/static_buffer.h"
 #include "yagi/gfx/color.h"
 #include "yagi/util/enum_bitmask_ops.h"
+#include "yagi/util/log.h"
 #include "glad/gl.h"
 #include "glm/glm.hpp"
 #include <concepts>
@@ -35,6 +37,12 @@ public:
 
   FramebufferBuilder framebuffer(GLsizei width, GLsizei height);
 
+  template <Numeric T>
+  std::unique_ptr<StaticBuffer<T>> static_buffer(
+      const std::vector<T> &data,
+      const BufTarget &target,
+      const BufUsage &usage);
+
   template <std::invocable<std::unique_ptr<GladGLContext> &> T>
   void run_block(T &&func) { func(gl_); }
 
@@ -43,6 +51,14 @@ public:
 private:
   std::unique_ptr<GladGLContext> gl_{nullptr};
 };
+
+template <Numeric T>
+std::unique_ptr<StaticBuffer<T>> Context::static_buffer(
+    const std::vector<T> &data,
+    const BufTarget &target,
+    const BufUsage &usage) {
+  return std::make_unique<StaticBuffer<T>>(gl_, data, target, usage);
+}
 
 } // namespace yagi
 
