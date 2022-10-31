@@ -1,10 +1,40 @@
 #ifndef YAGI_MSG_BUS_H
 #define YAGI_MSG_BUS_H
 
-namespace yagi {
+#include "yagi/msg/msg.h"
+#include <functional>
+#include <queue>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
 
-int add(int a, int b);
+namespace yagi::msg {
 
-} // namespace yagi
+using MsgFunc = std::function<void(const Msg &)>;
+
+class Bus {
+public:
+  static std::string register_endpoint(const MsgFunc &&f);
+
+  static void subscribe(const std::string &id, const Type &type);
+
+  template<Type T, typename... Args>
+  static void send(const Args &...args);
+
+  static void poll(const std::string &id);
+
+private:
+  static std::unordered_map<std::string, MsgFunc> funcs_;
+  static std::unordered_map<Type, std::unordered_set<std::string>> subscriptions_;
+  static std::unordered_map<std::string, std::queue<Msg>> queues_;
+};
+
+template<Type T, typename... Args>
+void Bus::send(const Args &...args) {
+  for (const auto &id: subscriptions_[T])
+    queues_[id].push(Msg{T, typename Map<T>::type{args...}});
+}
+
+} // namespace yagi::msg
 
 #endif //YAGI_MSG_BUS_H

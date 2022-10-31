@@ -1,9 +1,33 @@
 #include "yagi/msg/bus.h"
+#include "yagi/util/rnd.h"
 
-namespace yagi {
+namespace yagi::msg {
 
-int add(int a, int b) {
-  return a + b;
+std::unordered_map<std::string, MsgFunc> Bus::funcs_{};
+std::unordered_map<Type, std::unordered_set<std::string>> Bus::subscriptions_{};
+std::unordered_map<std::string, std::queue<Msg>> Bus::queues_{};
+
+std::string Bus::register_endpoint(const MsgFunc &&f) {
+  std::string id;
+  do {
+    id = rnd::base58(11);
+  } while (funcs_.contains(id));
+
+  funcs_[id] = f;
+  queues_[id] = std::queue<Msg>();
+
+  return id;
 }
 
-} // namespace yagi
+void Bus::subscribe(const std::string &id, const Type &type) {
+  subscriptions_[type].insert(id);
+}
+
+void Bus::poll(const std::string &id) {
+  while (!queues_[id].empty()) {
+    funcs_[id](queues_[id].front());
+    queues_[id].pop();
+  }
+}
+
+} // namespace yagi::msg

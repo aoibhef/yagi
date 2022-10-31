@@ -1,33 +1,39 @@
 #include "indev.h"
 
+using namespace yagi;
+
+class Foo {
+public:
+  std::string id;
+
+  Foo() {
+    id = msg::Bus::register_endpoint([this](const auto &msg){ process_msg(msg); });
+
+    msg::Bus::subscribe(id, msg::Type::AEvent);
+    msg::Bus::subscribe(id, msg::Type::BEvent);
+    msg::Bus::subscribe(id, msg::Type::CEvent);
+  }
+
+  void poll_msgs() {
+    msg::Bus::poll(id);
+  }
+
+  void process_msg(const msg::Msg &msg) {
+    std::visit(overloaded {
+        [&](const msg::AEvent &e) { fmt::print("A: {}, {}\n", e.a, e.b); },
+        [&](const msg::BEvent &e) { fmt::print("B: {}, {}\n", e.a, e.s); },
+        [&](const msg::CEvent &e) { fmt::print("C: {}, {}, {}\n", e.a, e.b, e.c); },
+    }, msg.data);
+  }
+};
+
 int main(int, char *[]) {
-  using namespace yagi;
+  auto f = Foo();
 
-  auto id1 = msg::Bus::create_id([](const msg::Msg &msg) {
-    std::visit(overloaded {
-        [&](const msg::AEvent &e) { fmt::print("id1 | A: {}, {}\n", e.a, e.b); },
-        [&](const msg::BEvent &e) { fmt::print("id1 | B: {}, {}\n", e.a, e.s); },
-        [&](const auto &e)        { YAGI_LOG_WARN("Unhandled event {}", msg.type); },
-    }, msg.data);
-  });
-  msg::Bus::subscribe(id1, msg::MsgType::AEvent);
-  msg::Bus::subscribe(id1, msg::MsgType::BEvent);
+  msg::Bus::send<msg::Type::AEvent>(1, 2);
+  msg::Bus::send<msg::Type::BEvent>(1, "Hello");
+  msg::Bus::send<msg::Type::CEvent>(1.1, 2.2, 3.3);
 
-  auto id2 = msg::Bus::create_id([](const msg::Msg &msg) {
-    std::visit(overloaded {
-        [&](const msg::AEvent &e) { fmt::print("id2 | A: {}, {}\n", e.a, e.b); },
-        [&](const msg::CEvent &e) { fmt::print("id2 | C: {}, {}, {}\n", e.a, e.b, e.c); },
-        [&](const auto &e)        { YAGI_LOG_WARN("Unhandled event {}", msg.type); },
-    }, msg.data);
-  });
-  msg::Bus::subscribe(id2, msg::MsgType::AEvent);
-  msg::Bus::subscribe(id2, msg::MsgType::CEvent);
-
-  msg::Bus::send<msg::MsgType::AEvent>(1, 2);
-  msg::Bus::send<msg::MsgType::BEvent>(1, "Hello");
-  msg::Bus::send<msg::MsgType::CEvent>(1.1, 2.2, 3.3);
-
-  msg::Bus::poll(id1);
-  msg::Bus::poll(id2);
+  f.poll_msgs();
 }
 
