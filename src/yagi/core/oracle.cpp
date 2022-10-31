@@ -1,4 +1,4 @@
-#include "yagi/app/oracle.h"
+#include "yagi/core/oracle.h"
 
 #include "yagi/util/log.h"
 #include "GLFW/glfw3.h"
@@ -10,7 +10,7 @@ std::once_flag Oracle::initialized_glfw_{};
 Oracle::Oracle() {
   std::call_once(initialized_glfw_, [&]{
     if (glfwInit() == GLFW_FALSE)
-      std::exit(1);
+      std::exit(EXIT_FAILURE);
 
     int major, minor, revision;
     glfwGetVersion(&major, &minor, &revision);

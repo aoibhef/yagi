@@ -1,7 +1,7 @@
 #ifndef YAGI_APP_APPLICATION_H
 #define YAGI_APP_APPLICATION_H
 
-#include "yagi/app/window.h"
+#include "yagi/core/window.h"
 #include <memory>
 
 namespace yagi {
@@ -9,6 +9,7 @@ namespace yagi {
 class Application {
 public:
   std::unique_ptr<Window> window{nullptr};
+  std::unique_ptr<Context> ctx{nullptr};
 
   Application();
 
