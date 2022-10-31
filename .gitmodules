@@ -1,0 +1,12 @@
+[submodule "external/fmt"]
+	path = external/fmt
+	url = ../../fmtlib/fmt.git
+[submodule "external/spdlog"]
+	path = external/spdlog
+	url = ../../gabime/spdlog.git
+[submodule "external/glfw"]
+	path = external/glfw
+	url = ../../glfw/glfw.git
+[submodule "external/glm"]
+	path = external/glm
+	url = ../../g-truc/glm.git
