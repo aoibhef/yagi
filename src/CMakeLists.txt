@@ -1,5 +1,6 @@
 set(YAGI_SRC_FILES ${YAGI_SRC_FILES}
         src/yagi/core/application.cpp
+        src/yagi/core/inputmgr.cpp
         src/yagi/core/glfw_callbacks.cpp
         src/yagi/core/oracle.cpp
         src/yagi/core/window.cpp
