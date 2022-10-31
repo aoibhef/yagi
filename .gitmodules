@@ -26,3 +26,6 @@
 [submodule "external/stduuid"]
 	path = external/stduuid
 	url = ../../mariusbancila/stduuid.git
+[submodule "external/implot"]
+	path = external/implot
+	url = ../../epezent/implot

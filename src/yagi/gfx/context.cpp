@@ -29,6 +29,7 @@ Context::Context(GLFWwindow *glfw_window, const glm::ivec2 &gl_version) {
 
 Context::~Context() {
   ImGui::DestroyContext(imgui_.ctx);
+  ImPlot::DestroyContext(implot_.ctx);
 }
 
 Context::Context(Context &&other) noexcept {
@@ -38,13 +39,16 @@ Context::Context(Context &&other) noexcept {
 Context &Context::operator=(Context &&other) noexcept {
   if (this != &other) {
     ImGui::DestroyContext(imgui_.ctx);
+    ImPlot::DestroyContext(implot_.ctx);
     gl_.reset();
 
     gl_.swap(other.gl_);
     std::swap(imgui_, other.imgui_);
+    std::swap(implot_, other.implot_);
 
     other.imgui_.ctx = nullptr;
     other.imgui_.io = nullptr;
+    other.implot_.ctx = nullptr;
   }
   return *this;
 }
@@ -89,6 +93,8 @@ void Context::initialize_imgui_(GLFWwindow *glfw_window) {
 
   ImGui_ImplGlfw_InitForOpenGL(glfw_window, true);
   ImGui_ImplOpenGL3_Init();
+
+  implot_.ctx = ImPlot::CreateContext();
 
   YAGI_LOG_DEBUG("Initialized ImGui");
 }

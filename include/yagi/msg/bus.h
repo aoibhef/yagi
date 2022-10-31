@@ -32,7 +32,7 @@ private:
 
 template<MsgType T, typename... Args>
 void Bus::send(const Args &...args) {
-  for (const auto &id: subscriptions_[T])
+  for (const auto &id : subscriptions_[T])
     queues_[id].push(Msg{T, typename Map<T>::type{args...}});
 }
 

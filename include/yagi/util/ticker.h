@@ -17,11 +17,11 @@ public:
   double dt_sec();
 
 private:
-  double start_{0.0};
-  double last_{0.0};
-  double dt_{0.0};
-  double interval_{0.0};
-  double acc_{0.0};
+  std::uint64_t start_{0};
+  std::uint64_t last_{0};
+  std::uint64_t dt_{0};
+  std::uint64_t interval_{0};
+  std::uint64_t acc_{0};
 };
 
 } // namespace yagi

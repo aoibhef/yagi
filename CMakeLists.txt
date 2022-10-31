@@ -3,7 +3,7 @@ project(yagi VERSION 0.1
         DESCRIPTION "WIP"
         LANGUAGES CXX C)
 
-set(YAGI_SPDLOG_LEVEL "SPDLOG_LEVEL_TRACE" CACHE STRING "spdlog log level")
+set(YAGI_SPDLOG_LEVEL "SPDLOG_LEVEL_DEBUG" CACHE STRING "spdlog log level")
 option(YAGI_BUILD_EXAMPLES "Build example programs" ON)
 
 if(MSVC)
@@ -35,6 +35,7 @@ target_include_directories(yagi PUBLIC
         external/glad/include
         external/imgui/backends
         external/imgui
+        external/implot
         external/pcg-cpp/include
         include)
 

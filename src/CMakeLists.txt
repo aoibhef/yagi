@@ -13,7 +13,9 @@ set(YAGI_SRC_FILES ${YAGI_SRC_FILES}
 
         src/yagi/msg/bus.cpp
 
+        src/yagi/util/noise/perlin.cpp
+        src/yagi/util/averagers.cpp
+        src/yagi/util/framecounter.cpp
         src/yagi/util/log.cpp
         src/yagi/util/rnd.cpp
-        src/yagi/util/ticker.cpp
-        src/yagi/util/time.cpp)
+        src/yagi/util/ticker.cpp)

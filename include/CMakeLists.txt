@@ -15,7 +15,10 @@ set(YAGI_INCLUDE_FILES ${YAGI_INCLUDE_FILES}
         include/yagi/msg/bus.h
         include/yagi/msg/msg_def.h
 
+        include/yagi/util/noise/perlin.h
+        include/yagi/util/averagers.h
         include/yagi/util/enum_bitmask_ops.h
+        include/yagi/util/framecounter.h
         include/yagi/util/log.h
         include/yagi/util/overloaded.h
         include/yagi/util/platform.h
@@ -23,4 +26,5 @@ set(YAGI_INCLUDE_FILES ${YAGI_INCLUDE_FILES}
         include/yagi/util/ticker.h
         include/yagi/util/time.h
 
+        include/yagi/yagi.h
         include/yagi/yagi_imconfig.h)

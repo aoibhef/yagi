@@ -8,8 +8,10 @@ public:
 
   void initialize() override {
     window->open({.title = "Indev",
-                  .size = {800, 600},
+                  .size = {1280, 720},
                   .flags = yagi::WindowFlags::centered});
+    app_debug_overlay_enabled(true);
+
     ctx = window->create_ctx();
 
     shader = ctx->shader()
@@ -40,9 +42,9 @@ void main() {
         .link();
 
     vbo = ctx->static_buffer<float>(yagi::BufTarget::array, yagi::BufUsage::static_draw, {
-         0.0,  0.5, 0.0,   1.0, 0.0, 0.0, 1.0,
-        -0.5, -0.5, 0.0,   0.0, 1.0, 0.0, 1.0,
-         0.5, -0.5, 0.0,   0.0, 0.0, 1.0, 1.0
+         0.0,  0.3, 0.0,   1.0, 0.0, 0.0, 1.0,
+        -0.3, -0.3, 0.0,   0.0, 1.0, 0.0, 1.0,
+         0.3, -0.3, 0.0,   0.0, 0.0, 1.0, 1.0
     });
 
     vao = ctx->vertex_array(*shader, {
@@ -51,9 +53,7 @@ void main() {
     });
   }
 
-  void update(double dt) override {
-
-  }
+  void update(double dt) override {}
 
   void draw() override {
     ctx->clear(yagi::rgb(0x000000));

@@ -9,7 +9,8 @@
 namespace yagi {
 
 enum class MsgType {
-  WindowPos
+  WindowPos,
+  ImguiLog
 };
 
 template<MsgType>
@@ -24,16 +25,20 @@ struct Map;
   };
 
 DEFINE_MSG(WindowPos,
-  GLFWwindow *window;
-  int xpos;
-  int ypos;
+    GLFWwindow *window;
+    int xpos;
+    int ypos;
+)
+
+DEFINE_MSG(ImguiLog,
+    std::string msg;
 )
 
 #undef DEFINE_MSG
 
 struct Msg {
   MsgType type;
-  std::variant<WindowPos> data;
+  std::variant<WindowPos, ImguiLog> data;
 };
 
 } // namespace yagi
@@ -43,6 +48,7 @@ inline std::ostream &operator<<(std::ostream &out, yagi::MsgType value) {
   switch (value) {
     using enum yagi::MsgType;
     STRINGIFY(WindowPos)
+    STRINGIFY(ImguiLog)
   }
 #undef STRINGIFY
 }
