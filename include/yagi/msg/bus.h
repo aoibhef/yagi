@@ -22,6 +22,7 @@ public:
   static void send(const Args &...args);
 
   static void poll(const std::string &id);
+  static void poll_all();
 
 private:
   static std::unordered_map<std::string, MsgFunc> funcs_;

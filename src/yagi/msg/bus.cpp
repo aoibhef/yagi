@@ -30,4 +30,9 @@ void Bus::poll(const std::string &id) {
   }
 }
 
+void Bus::poll_all() {
+  for (auto &q : queues_)
+    poll(q.first);
+}
+
 } // namespace yagi::msg
