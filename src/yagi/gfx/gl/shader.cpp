@@ -300,7 +300,7 @@ GLint Shader::get_attrib_loc_(const std::string &name) {
     if (loc == -1)
       YAGI_LOG_ERROR("Failed to get location of attrib: '{}'", name);
     else
-      YAGI_LOG_TRACE("Located attrib '{}' in shader ({} / {}) at loc {}", name, id, tag, loc);
+      YAGI_LOG_TRACE("Located attrib '{}' in shader ({}:{}) at loc {}", name, id, tag, loc);
     attrib_locs_[name] = loc;
   }
   return attrib_locs_[name];
@@ -312,7 +312,7 @@ GLint Shader::get_uniform_loc_(const std::string &name) {
     if (loc == -1)
       YAGI_LOG_ERROR("Failed to get location of uniform: '{}'", name);
     else
-      YAGI_LOG_TRACE("Located uniform '{}' in shader ({} / {}) at loc {}", name, id, tag, loc);
+      YAGI_LOG_TRACE("Located uniform '{}' in shader ({}:{}) at loc {}", name, id, tag, loc);
     uniform_locs_[name] = loc;
   }
   return uniform_locs_[name];
@@ -321,14 +321,14 @@ GLint Shader::get_uniform_loc_(const std::string &name) {
 void Shader::del_id_() {
   if (id != 0) {
     gl_->DeleteProgram(id);
-    YAGI_LOG_TRACE("Deleted shader ({} / {})", id, tag);
+    YAGI_LOG_TRACE("Deleted shader ({}:{})", id, tag);
   }
 }
 
 ShaderBuilder::ShaderBuilder(std::unique_ptr<GladGLContext> &gl, const std::string &tag) : gl_(gl), tag_(tag) {
   program_id_ = gl_->CreateProgram();
 
-  YAGI_LOG_TRACE("Generated shader ({} / {})", program_id_, tag_);
+  YAGI_LOG_TRACE("Generated shader ({}:{})", program_id_, tag_);
 }
 
 ShaderBuilder &ShaderBuilder::vert_from_src(const std::string &src) {
@@ -340,7 +340,7 @@ ShaderBuilder &ShaderBuilder::vert_from_src(const std::string &src) {
 
   if (check_compile_(vert_id_, GL_VERTEX_SHADER)) {
     gl_->AttachShader(program_id_, vert_id_);
-    YAGI_LOG_TRACE("Attached vertex shader ({})", tag_);
+    YAGI_LOG_TRACE("Attached vertex shader ({}:{})", program_id_, tag_);
   }
 
   return *this;
@@ -359,7 +359,7 @@ ShaderBuilder &ShaderBuilder::frag_from_src(const std::string &src) {
 
   if (check_compile_(frag_id_, GL_FRAGMENT_SHADER)) {
     gl_->AttachShader(program_id_, frag_id_);
-    YAGI_LOG_TRACE("Attached fragment shader ({})", tag_);
+    YAGI_LOG_TRACE("Attached fragment shader ({}:{})", program_id_, tag_);
   }
 
   return *this;
@@ -385,7 +385,7 @@ ShaderBuilder &ShaderBuilder::varyings(const std::vector<std::string> &vs) {
         GL_INTERLEAVED_ATTRIBS
     );
 
-    YAGI_LOG_TRACE("Setup varyings ({})", tag_);
+    YAGI_LOG_TRACE("Setup varyings ({}:{})", program_id_, tag_);
   }
 
   return *this;
@@ -394,7 +394,7 @@ ShaderBuilder &ShaderBuilder::varyings(const std::vector<std::string> &vs) {
 std::unique_ptr<Shader> ShaderBuilder::link() {
   gl_->LinkProgram(program_id_);
   if (check_link_())
-    YAGI_LOG_TRACE("Linked shader program ({})", tag_);
+    YAGI_LOG_TRACE("Linked shader program ({}:{})", program_id_, tag_);
 
   if (vert_id_ != 0)
     gl_->DeleteShader(vert_id_);
@@ -430,7 +430,7 @@ bool ShaderBuilder::check_compile_(GLuint shader_id, GLenum type) {
     else
       type_str = "fragment shader_";
 
-    YAGI_LOG_ERROR("Failed to compile {} ({})! Info log:\n{}", type_str, tag_, &info_log[0]);
+    YAGI_LOG_ERROR("Failed to compile {} ({}:{})! Info log:\n{}", type_str, program_id_, tag_, &info_log[0]);
     return false;
   }
 
@@ -452,7 +452,7 @@ bool ShaderBuilder::check_link_() {
         &info_log[0]
     );
 
-    YAGI_LOG_ERROR("Failed to link shader program ({})! Info log:\n{}", tag_, &info_log[0]);
+    YAGI_LOG_ERROR("Failed to link shader program ({}:{})! Info log:\n{}", program_id_, tag_, &info_log[0]);
     return false;
   }
 

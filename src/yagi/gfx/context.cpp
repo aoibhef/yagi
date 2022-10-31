@@ -43,4 +43,8 @@ FramebufferBuilder Context::framebuffer(GLsizei width, GLsizei height) {
   return {gl_, width, height};
 }
 
+std::unique_ptr<GladGLContext> &Context::get_underlying_ctx() {
+  return gl_;
+}
+
 } // namespace yagi
