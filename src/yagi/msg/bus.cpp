@@ -1,7 +1,7 @@
 #include "yagi/msg/bus.h"
 #include "yagi/util/rnd.h"
 
-namespace yagi::msg {
+namespace yagi {
 
 std::unordered_map<std::string, MsgFunc> Bus::funcs_{};
 std::unordered_map<MsgType, std::unordered_set<std::string>> Bus::subscriptions_{};
@@ -35,4 +35,4 @@ void Bus::poll_all() {
     poll(q.first);
 }
 
-} // namespace yagi::msg
+} // namespace yagi

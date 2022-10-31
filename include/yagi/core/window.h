@@ -51,7 +51,7 @@ public:
 
 private:
   std::string msg_endpoint_id_{};
-  void received_msg_(const msg::Msg &msg);
+  void received_msg_(const Msg &msg);
 
   struct {
     bool borderless{false};

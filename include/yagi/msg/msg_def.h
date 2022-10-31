@@ -6,7 +6,7 @@
 #include "fmt/ostream.h"
 #include <variant>
 
-namespace yagi::msg {
+namespace yagi {
 
 enum class MsgType {
   WindowPos
@@ -36,17 +36,15 @@ struct Msg {
   std::variant<WindowPos> data;
 };
 
-} // namespace yagi::msg
+} // namespace yagi
 
-inline std::ostream &operator<<(std::ostream &out, yagi::msg::MsgType value) {
-  std::string s;
-#define STRINGIFY(p) case (p): s = #p; break;
+inline std::ostream &operator<<(std::ostream &out, yagi::MsgType value) {
+#define STRINGIFY(p) case (p): return out << #p;
   switch (value) {
-    using enum yagi::msg::MsgType;
+    using enum yagi::MsgType;
     STRINGIFY(WindowPos)
   }
 #undef STRINGIFY
-  return out << s;
 }
 
 #endif //YAGI_MSG_MSG_H

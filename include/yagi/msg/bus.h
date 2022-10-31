@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-namespace yagi::msg {
+namespace yagi {
 
 using MsgFunc = std::function<void(const Msg &)>;
 
@@ -36,6 +36,6 @@ void Bus::send(const Args &...args) {
     queues_[id].push(Msg{T, typename Map<T>::type{args...}});
 }
 
-} // namespace yagi::msg
+} // namespace yagi
 
 #endif //YAGI_MSG_BUS_H
