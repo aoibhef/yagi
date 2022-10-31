@@ -7,6 +7,7 @@ set(YAGI_SRC_FILES ${YAGI_SRC_FILES}
         src/yagi/gfx/gl/buffer_base.cpp
         src/yagi/gfx/gl/framebuffer.cpp
         src/yagi/gfx/gl/shader.cpp
+        src/yagi/gfx/gl/vertex_array.cpp
         src/yagi/gfx/color.cpp
         src/yagi/gfx/context.cpp
 

@@ -43,6 +43,13 @@ FramebufferBuilder Context::framebuffer(GLsizei width, GLsizei height) {
   return {gl_, width, height};
 }
 
+std::unique_ptr<VertexArray> Context::vertex_array(
+    Shader &shader,
+    const std::vector<BufAttrs> &buf_attrs
+) {
+  return std::make_unique<VertexArray>(gl_, shader, buf_attrs);
+}
+
 std::unique_ptr<GladGLContext> &Context::get_underlying_ctx() {
   return gl_;
 }

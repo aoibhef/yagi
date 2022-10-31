@@ -8,6 +8,7 @@ set(YAGI_INCLUDE_FILES ${YAGI_INCLUDE_FILES}
         include/yagi/gfx/gl/framebuffer.h
         include/yagi/gfx/gl/shader.h
         include/yagi/gfx/gl/static_buffer.h
+        include/yagi/gfx/gl/vertex_array.h
         include/yagi/gfx/color.h
         include/yagi/gfx/context.h
 

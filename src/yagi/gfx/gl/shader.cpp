@@ -48,6 +48,18 @@ void Shader::use() {
   gl_->UseProgram(id);
 }
 
+GLint Shader::get_attrib_loc(const std::string &name) {
+  if (!attrib_locs_.contains(name)) {
+    GLint loc = gl_->GetAttribLocation(id, name.c_str());
+    if (loc == -1)
+      YAGI_LOG_ERROR("Failed to get location of attrib: '{}'", name);
+    else
+      YAGI_LOG_TRACE("Located attrib '{}' in shader ({}:{}) at loc {}", name, id, tag, loc);
+    attrib_locs_[name] = loc;
+  }
+  return attrib_locs_[name];
+}
+
 void Shader::uniform_1f(const std::string &name, float v) {
   int loc = get_uniform_loc_(name);
   if (loc != -1)
@@ -292,18 +304,6 @@ void Shader::uniform_mat4x3d(const std::string &name, glm::dmat4x3 v, bool trans
   int loc = get_uniform_loc_(name);
   if (loc != -1)
     gl_->UniformMatrix4x3dv(loc, 1, transpose ? GL_TRUE : GL_FALSE, glm::value_ptr(v));
-}
-
-GLint Shader::get_attrib_loc_(const std::string &name) {
-  if (!attrib_locs_.contains(name)) {
-    GLint loc = gl_->GetAttribLocation(id, name.c_str());
-    if (loc == -1)
-      YAGI_LOG_ERROR("Failed to get location of attrib: '{}'", name);
-    else
-      YAGI_LOG_TRACE("Located attrib '{}' in shader ({}:{}) at loc {}", name, id, tag, loc);
-    attrib_locs_[name] = loc;
-  }
-  return attrib_locs_[name];
 }
 
 GLint Shader::get_uniform_loc_(const std::string &name) {
