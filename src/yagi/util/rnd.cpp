@@ -53,7 +53,7 @@ void debug_show_seed() {
   generator();  // Make sure generator has been invoked before
 
   if (std::uint64_t(seed_info().seed >> 64) == 0 && std::uint64_t(seed_info().stream >> 64) == 0) {
-    LOG_DEBUG(
+    YAGI_LOG_DEBUG(
         "Seed statement: rnd::seed({:#x}, {:#x});",
         std::uint64_t(seed_info().seed),
         std::uint64_t(seed_info().stream)
@@ -64,7 +64,7 @@ void debug_show_seed() {
     auto seed_lo = std::uint64_t(seed_info().seed);
     auto stream_hi = std::uint64_t(seed_info().stream >> 64);
     auto stream_lo = std::uint64_t(seed_info().stream);
-    LOG_DEBUG(
+    YAGI_LOG_DEBUG(
         "Seed statement: rnd::seed128({:#x}, {:#x}, {:#x}, {:#x});",
         seed_hi, seed_lo,
         stream_hi, stream_lo
@@ -73,13 +73,20 @@ void debug_show_seed() {
 }
 
 std::string base58(std::size_t length) {
+  const static char B58_ALPHABET[] = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+
   std::string id(length, 0);
   std::generate_n(id.begin(), length, []{
-    const static char B58_ALPHABET[] = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
     return B58_ALPHABET[get<unsigned char>(0x00, 0xff) % 58];
   });
 
   return id;
+}
+
+std::string uuidv4() {
+  static thread_local uuids::basic_uuid_random_generator<pcg64> gen{generator()};
+
+  return uuids::to_string(gen());
 }
 
 } // namespace rnd

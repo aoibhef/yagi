@@ -23,3 +23,6 @@
 [submodule "external/pcg-cpp"]
 	path = external/pcg-cpp
 	url = ../../imneme/pcg-cpp.git
+[submodule "external/stduuid"]
+	path = external/stduuid
+	url = ../../mariusbancila/stduuid.git

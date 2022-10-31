@@ -3,7 +3,7 @@ project(yagi VERSION 0.1
         DESCRIPTION "WIP"
         LANGUAGES CXX C)
 
-option(YAGI_SPDLOG_LEVEL "spdlog log level" SPDLOG_LEVEL_DEBUG)
+set(YAGI_SPDLOG_LEVEL "SPDLOG_LEVEL_DEBUG" CACHE STRING "spdlog log level")
 option(YAGI_BUILD_EXAMPLES "Build example programs" ON)
 
 if(MSVC)
@@ -29,7 +29,7 @@ add_library(yagi STATIC
 target_compile_definitions(yagi PUBLIC IMGUI_USER_CONFIG="yagi/yagi_imconfig.h")
 
 # spdlog log level
-target_compile_definitions(yagi PRIVATE SPDLOG_ACTIVE_LEVEL=${YAGI_SPDLOG_LEVEL})
+target_compile_definitions(yagi PUBLIC SPDLOG_ACTIVE_LEVEL=${YAGI_SPDLOG_LEVEL})
 
 target_include_directories(yagi PUBLIC
         external/glad/include
@@ -44,7 +44,8 @@ target_link_libraries(yagi PUBLIC
         glm::glm
         libnyquist
         OpenAL::OpenAL
-        spdlog::spdlog_header_only)
+        spdlog::spdlog_header_only
+        stduuid)
 
 if(YAGI_BUILD_EXAMPLES)
     add_subdirectory(examples)
