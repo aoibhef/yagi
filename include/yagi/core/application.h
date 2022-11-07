@@ -11,19 +11,26 @@ namespace yagi {
 
 class ImguiLogWindow {
 public:
+  bool docked{true};
+
   ImguiLogWindow();
 
   void clear();
 
-  void add(const char* fmt, ...) IM_FMTARGS(2);
+  void add(spdlog::level::level_enum level, const char* fmt, ...) IM_FMTARGS(2);
 
-  void draw(const char* title, bool* p_open = nullptr);
+  void draw(const char* title, bool *p_open = nullptr);
 
 private:
   ImGuiTextBuffer buf_;
   ImGuiTextFilter filter_;
   ImVector<int> line_offsets_;
-  bool autoscroll_;
+  ImVector<spdlog::level::level_enum> line_levels_;
+
+  bool autoscroll_{true};
+  bool wrapping_{true};
+
+  static std::unordered_map<spdlog::level::level_enum, ImU32> color_map_;
 };
 
 class Application {
@@ -41,6 +48,7 @@ public:
   virtual void update(double dt);
   virtual void draw();
 
+  void app_shutdown();
   void app_debug_overlay_enabled(bool enabled);
 
 private:
@@ -51,6 +59,7 @@ private:
 
   struct {
     bool enabled{false};
+
     ImguiLogWindow log{};
   } overlay{};
 

@@ -80,13 +80,13 @@ void Framebuffer::use_texture(const std::string &tex_name) {
 
 void Framebuffer::del_id_() {
   if (id != 0) {
-    YAGI_LOG_TRACE("Deleting framebuffer ({})", id);
+    YAGI_LOG_DEBUG("Deleting framebuffer ({})", id);
     for (auto &p: tex_attachments_) {
-      YAGI_LOG_TRACE("FBO/Deleting texture ({} / {})", p.second, id);
+      YAGI_LOG_DEBUG("FBO/Deleting texture ({} / {})", p.second, id);
       gl_.DeleteTextures(1, &p.second);
     }
     for (auto &p: rbo_attachments_) {
-      YAGI_LOG_TRACE("FBO/Deleting renderbuffer ({} / {})", p.second, id);
+      YAGI_LOG_DEBUG("FBO/Deleting renderbuffer ({} / {})", p.second, id);
       gl_.DeleteRenderbuffers(1, &p.second);
     }
     gl_.DeleteFramebuffers(1, &id);
@@ -102,7 +102,7 @@ FramebufferBuilder::FramebufferBuilder(GladGLContext &gl, GLsizei width, GLsizei
 FramebufferBuilder &FramebufferBuilder::texture(const std::string &tag, TexFormat internalformat, bool retro) {
   GLuint tex;
   gl_.GenTextures(1, &tex);
-  YAGI_LOG_TRACE("FBO/Generated texture ({})", tex);
+  YAGI_LOG_DEBUG("FBO/Generated texture ({})", tex);
 
   gl_.BindTexture(GL_TEXTURE_2D, tex);
   gl_.TexStorage2D(GL_TEXTURE_2D, 1, unwrap(internalformat), width_, height_);
@@ -130,7 +130,7 @@ FramebufferBuilder &FramebufferBuilder::texture(TexFormat format) {
 FramebufferBuilder &FramebufferBuilder::renderbuffer(const std::string &tag, RBufFormat internalformat) {
   GLuint rbo;
   gl_.GenRenderbuffers(1, &rbo);
-  YAGI_LOG_TRACE("FBO/Generated renderbuffer ({})", rbo);
+  YAGI_LOG_DEBUG("FBO/Generated renderbuffer ({})", rbo);
 
   gl_.BindRenderbuffer(GL_RENDERBUFFER, rbo);
   gl_.RenderbufferStorage(GL_RENDERBUFFER, unwrap(internalformat), width_, height_);
@@ -156,7 +156,7 @@ std::unique_ptr<Framebuffer> FramebufferBuilder::check_complete() {
   if (gl_.CheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     spdlog::error("Framebuffer is not complete");
   else
-    YAGI_LOG_TRACE("Completed framebuffer ({})", id_);
+    YAGI_LOG_DEBUG("Completed framebuffer ({})", id_);
   gl_.BindFramebuffer(GL_FRAMEBUFFER, 0);
 
   auto f = std::make_unique<Framebuffer>(gl_);
@@ -171,7 +171,7 @@ std::unique_ptr<Framebuffer> FramebufferBuilder::check_complete() {
 
 void FramebufferBuilder::gen_id_() {
   gl_.GenFramebuffers(1, &id_);
-  YAGI_LOG_TRACE("Generated framebuffer ({})", id_);
+  YAGI_LOG_DEBUG("Generated framebuffer ({})", id_);
 }
 
 GLenum FramebufferBuilder::get_texture_format(GLenum internalformat) {

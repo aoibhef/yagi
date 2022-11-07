@@ -56,6 +56,10 @@ void InputMgr::unbind(const std::string &binding) {
   bindings_.erase(binding);
 }
 
+void InputMgr::bind_func(const std::string &action, const std::function<void(void)> &f) {
+  func_bindings_[action] = f;
+}
+
 bool InputMgr::pressed(const std::string &binding) {
   if (bindings_.contains(binding)) {
     const auto action = bindings_[binding];
@@ -83,12 +87,12 @@ bool InputMgr::down(const std::string &binding, double interval, double delay) {
     if (interval <= 0.0 && delay <= 0.0)
       return state_[action];
 
-    else if (repeat_state_.contains(binding)) {
-      return repeat_state_[binding].pressed;
+    else if (repeat_state_.contains(action)) {
+      return repeat_state_[action].pressed;
 
     } else if (state_[action]) {
       if (delay >= 0.0) {
-        repeat_state_[binding] = Repeat{
+        repeat_state_[action] = Repeat{
           .time = interval,
           .interval = interval,
           .delay = delay,
@@ -96,7 +100,7 @@ bool InputMgr::down(const std::string &binding, double interval, double delay) {
         };
         return false;
       } else {
-        repeat_state_[binding] = Repeat{
+        repeat_state_[action] = Repeat{
             .time = interval,
             .interval = interval
         };
@@ -112,9 +116,12 @@ void InputMgr::received_msg_(const Msg &msg) {
   std::visit(overloaded {
       [&](const Key &e) {
         auto key_str = glfw_key_to_str_(e.key);
-        if (e.action == GLFW_PRESS)
+        if (e.action == GLFW_PRESS) {
           state_[key_str] = true;
-        else if (e.action == GLFW_RELEASE) {
+
+          if (func_bindings_.contains(key_str))
+            func_bindings_[key_str]();
+        } else if (e.action == GLFW_RELEASE) {
           state_[key_str] = false;
           repeat_state_.erase(key_str);
         }
@@ -140,9 +147,12 @@ void InputMgr::received_msg_(const Msg &msg) {
 
       [&](const MouseButton &e) {
         auto button_str = glfw_button_to_str_(e.button);
-        if (e.action == GLFW_PRESS)
+        if (e.action == GLFW_PRESS) {
           state_[button_str] = true;
-        else if (e.action == GLFW_RELEASE) {
+
+          if (func_bindings_.contains(button_str))
+            func_bindings_[button_str]();
+        } else if (e.action == GLFW_RELEASE) {
           state_[button_str] = false;
           repeat_state_.erase(button_str);
         }

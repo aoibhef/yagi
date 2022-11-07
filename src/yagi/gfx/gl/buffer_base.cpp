@@ -36,13 +36,13 @@ void BufferBase::unbind(const BufTarget &target) const {
 
 void BufferBase::gen_id_() {
   gl_.GenBuffers(1, &id);
-  YAGI_LOG_TRACE("Generated buffer ({})", id);
+  YAGI_LOG_DEBUG("Generated buffer ({})", id);
 }
 
 void BufferBase::del_id_() {
   if (id != 0) {
     gl_.DeleteBuffers(1, &id);
-    YAGI_LOG_TRACE("Deleted buffer ({})", id);
+    YAGI_LOG_DEBUG("Deleted buffer ({})", id);
   }
 }
 

@@ -11,6 +11,7 @@ public:
                   .size = {1600, 900},
                   .flags = yagi::WindowFlags::centered});
     app_debug_overlay_enabled(true);
+    input->bind_func("escape", [&]{ app_shutdown(); });
 
     ctx = window->create_ctx();
 
@@ -54,14 +55,30 @@ void main() {
   }
 
   void update(double dt) override {
-    if (input->pressed("a"))
-      YAGI_LOG_INFO("Pressed A!");
+    if (input->pressed("1"))
+      window->set_decorated(!window->decorated);
 
-    if (input->released("a"))
-      YAGI_LOG_INFO("Released A!");
+    if (input->pressed("2"))
+      window->set_vsync(!window->vsync);
 
-    if (input->down("a", 0.5, 2.0))
-      YAGI_LOG_INFO("Holding A!");
+    if (input->pressed("3"))
+      window->set_resizable(!window->resizable);
+
+    if (input->down("a", 0.1)) {
+      int log_level = rnd::get<int>(0, 5);
+
+      std::string s(16, 0);
+      std::generate_n(s.begin(), 16, []() -> char { return rnd::get<char>('A', 'Z'); });
+
+      switch (log_level) {
+        case 0: YAGI_LOG_TRACE("{}", s); break;
+        case 1: YAGI_LOG_DEBUG("{}", s); break;
+        case 2: YAGI_LOG_INFO("{}", s); break;
+        case 3: YAGI_LOG_WARN("{}", s); break;
+        case 4: YAGI_LOG_ERROR("{}", s); break;
+        case 5: YAGI_LOG_CRITICAL("{}", s); break;
+      }
+    }
   }
 
   void draw() override {

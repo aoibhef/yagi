@@ -46,13 +46,13 @@ void VertexArray::draw_arrays(const DrawMode &mode, GLint first, GLsizei count) 
 
 void VertexArray::gen_id_() {
   gl_.GenVertexArrays(1, &id);
-  YAGI_LOG_TRACE("Generated vertex array ({})", id);
+  YAGI_LOG_DEBUG("Generated vertex array ({})", id);
 }
 
 void VertexArray::del_id_() {
   if (id != 0) {
     gl_.DeleteVertexArrays(1, &id);
-    YAGI_LOG_TRACE("Deleted vertex array ({})", id);
+    YAGI_LOG_DEBUG("Deleted vertex array ({})", id);
   }
 }
 
@@ -78,7 +78,7 @@ void VertexArray::process_buf_attrs_(Shader &shader, const std::vector<BufAttrs>
       );
       gl_.EnableVertexAttribArray(loc);
 
-      YAGI_LOG_TRACE(
+      YAGI_LOG_DEBUG(
           "Vertex attribute for buf {}: {} {} {} {} {}{}{} {}",
           buf.id,
           attr.name,

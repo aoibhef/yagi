@@ -2,6 +2,7 @@
 #define YAGI_CORE_INPUTMGR_H
 
 #include "yagi/msg/bus.h"
+#include <concepts>
 #include <unordered_map>
 
 namespace yagi {
@@ -32,6 +33,8 @@ public:
   void bind(const std::string &action, const std::string &binding);
   void unbind(const std::string &binding);
 
+  void bind_func(const std::string &action, const std::function<void(void)> &f);
+
   bool pressed(const std::string &binding);
   bool released(const std::string &binding);
   bool down(const std::string &binding, double interval = 0.0, double delay = 0.0);
@@ -49,6 +52,7 @@ private:
   };
 
   std::unordered_map<std::string, std::string> bindings_{};
+  std::unordered_map<std::string, std::function<void(void)>> func_bindings_{};
   std::unordered_map<std::string, bool> state_{};
   std::unordered_map<std::string, bool> prev_state_{};
   std::unordered_map<std::string, Repeat> repeat_state_{};

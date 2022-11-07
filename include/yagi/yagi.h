@@ -8,6 +8,8 @@
 #include "yagi/gfx/color.h"
 #include "yagi/gfx/context.h"
 
+#include "yagi/util/rnd.h"
+
 #include "fmt/format.h"
 
 #define YAGI_CONSULT_ORACLE(A)           \

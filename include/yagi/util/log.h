@@ -19,7 +19,7 @@ protected:
   void sink_it_(const spdlog::details::log_msg& msg) override {
     spdlog::memory_buf_t formatted;
     spdlog::sinks::base_sink<Mutex>::formatter_->format(msg, formatted);
-    yagi::Bus::send_nowait<yagi::MsgType::ImguiLog>(fmt::to_string(formatted));
+    yagi::Bus::send_nowait<yagi::MsgType::ImguiLog>(fmt::to_string(formatted), msg.level);
   }
 
   void flush_() override { /* do nothing */ }

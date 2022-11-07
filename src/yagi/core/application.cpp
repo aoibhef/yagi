@@ -21,13 +21,17 @@ void Application::deinitialize() {}
 void Application::update(double dt) {}
 void Application::draw() {}
 
+void Application::app_shutdown() {
+  window->set_should_close(true);
+}
+
 void Application::app_debug_overlay_enabled(bool enabled) {
   overlay.enabled = enabled;
 }
 
 void Application::received_msg_(const Msg &msg) {
   std::visit(overloaded {
-      [&](const ImguiLog &m) { overlay.log.add("%s", m.msg.c_str()); },
+      [&](const ImguiLog &m) { overlay.log.add(m.level, "%s", m.msg.c_str()); },
       [&](const auto &) { YAGI_LOG_WARN("Unhandled event {}", msg.type); }
   }, msg.data);
 }
@@ -53,7 +57,7 @@ void Application::draw_() {
 void Application::draw_debug_overlay_() {
   ImGui::SetNextWindowPos({0, 0}, ImGuiCond_Always);
   if (ImGui::Begin("Overlay_Perf", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize)) {
-    ImGui::Text("%s", fmt::format("FPS: {:.2f}", framecounter_.fps()).c_str());
+    ImGui::Text("%s", fmt::format("FPS: {:.2f}{}", framecounter_.fps(), window->vsync ? " (vsync)" : "").c_str());
 
     auto dts = framecounter_.dts_vec();
     auto [dt_min, dt_max] = std::minmax_element(dts.begin(), dts.end());
@@ -71,8 +75,9 @@ void Application::draw_debug_overlay_() {
   }
   ImGui::End();
 
-  ImGui::SetNextWindowPos({0.0f, ImGui::GetIO().DisplaySize.y}, 0, {0.0f, 1.0f});
-  ImGui::SetNextWindowSize({ImGui::GetIO().DisplaySize.x * 0.4f, ImGui::GetIO().DisplaySize.y * 0.25f}, ImGuiCond_Once);
+  if (overlay.log.docked)
+    ImGui::SetNextWindowPos({0.0f, ImGui::GetIO().DisplaySize.y}, 0, {0.0f, 1.0f});
+  ImGui::SetNextWindowSize({ImGui::GetIO().DisplaySize.x * 0.25f, ImGui::GetIO().DisplaySize.y * 0.25f}, ImGuiCond_Once);
   overlay.log.draw("Debug Log");
 }
 
@@ -111,17 +116,22 @@ void ImguiLogWindow::clear() {
   buf_.clear();
   line_offsets_.clear();
   line_offsets_.push_back(0);
+  line_levels_.clear();
+  line_levels_.push_back(spdlog::level::info);
 }
 
-void ImguiLogWindow::add(const char *fmt, ...) {
+void ImguiLogWindow::add(spdlog::level::level_enum level, const char *fmt, ...) {
   int old_size = buf_.size();
   va_list args;
       va_start(args, fmt);
   buf_.appendfv(fmt, args);
       va_end(args);
   for (int new_size = buf_.size(); old_size < new_size; old_size++)
-    if (buf_[old_size] == '\n')
+    if (buf_[old_size] == '\n') {
       line_offsets_.push_back(old_size + 1);
+      line_levels_[line_levels_.size() - 1] = level;
+      line_levels_.push_back(level);
+    }
 }
 
 void ImguiLogWindow::draw(const char *title, bool *p_open) {
@@ -133,6 +143,11 @@ void ImguiLogWindow::draw(const char *title, bool *p_open) {
   // Options menu
   if (ImGui::BeginPopup("Options")) {
     ImGui::Checkbox("Auto-scroll", &autoscroll_);
+    ImGui::Checkbox("Wrapping", &wrapping_);
+    if (ImGui::BeginMenu("Docking")) {
+      ImGui::Checkbox("Enabled", &docked);
+      ImGui::EndMenu();
+    }
     ImGui::EndPopup();
   }
 
@@ -154,12 +169,17 @@ void ImguiLogWindow::draw(const char *title, bool *p_open) {
   ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
   const char* buf = buf_.begin();
   const char* buf_end = buf_.end();
+  if (wrapping_)
+    ImGui::PushTextWrapPos(ImGui::GetWindowWidth());
   if (filter_.IsActive()) {
     for (int line_no = 0; line_no < line_offsets_.Size; line_no++) {
       const char* line_start = buf + line_offsets_[line_no];
       const char* line_end = (line_no + 1 < line_offsets_.Size) ? (buf + line_offsets_[line_no + 1] - 1) : buf_end;
-      if (filter_.PassFilter(line_start, line_end))
+      if (filter_.PassFilter(line_start, line_end)) {
+        ImGui::PushStyleColor(ImGuiCol_Text, color_map_[line_levels_[line_no]]);
         ImGui::TextUnformatted(line_start, line_end);
+        ImGui::PopStyleColor();
+      }
     }
   } else {
     ImGuiListClipper clipper;
@@ -168,11 +188,15 @@ void ImguiLogWindow::draw(const char *title, bool *p_open) {
       for (int line_no = clipper.DisplayStart; line_no < clipper.DisplayEnd; line_no++) {
         const char* line_start = buf + line_offsets_[line_no];
         const char* line_end = (line_no + 1 < line_offsets_.Size) ? (buf + line_offsets_[line_no + 1] - 1) : buf_end;
+        ImGui::PushStyleColor(ImGuiCol_Text, color_map_[line_levels_[line_no]]);
         ImGui::TextUnformatted(line_start, line_end);
+        ImGui::PopStyleColor();
       }
     }
     clipper.End();
   }
+  if (wrapping_)
+    ImGui::PopTextWrapPos();
   ImGui::PopStyleVar();
 
   if (autoscroll_ && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
@@ -181,5 +205,14 @@ void ImguiLogWindow::draw(const char *title, bool *p_open) {
   ImGui::EndChild();
   ImGui::End();
 }
+
+std::unordered_map<spdlog::level::level_enum, ImU32> ImguiLogWindow::color_map_ = {
+    {spdlog::level::trace, IM_COL32(198, 208, 245, 255)},
+    {spdlog::level::debug, IM_COL32(140, 170, 238, 255)},
+    {spdlog::level::info, IM_COL32(166, 209, 137, 255)},
+    {spdlog::level::warn, IM_COL32(229, 200, 144, 255)},
+    {spdlog::level::err, IM_COL32(231, 130, 132, 255)},
+    {spdlog::level::critical, IM_COL32(244, 184, 228, 255)}
+};
 
 } // namespace yagi

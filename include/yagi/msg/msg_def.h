@@ -4,6 +4,7 @@
 #include "fmt/ostream.h"
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
+#include "spdlog/spdlog.h"
 #include <variant>
 
 namespace yagi {
@@ -146,6 +147,7 @@ DEFINE_MSG(Drop,
 
 DEFINE_MSG(ImguiLog,
     std::string msg;
+    spdlog::level::level_enum level;
 )
 
 #undef DEFINE_MSG

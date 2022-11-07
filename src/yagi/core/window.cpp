@@ -55,13 +55,27 @@ void Window::set_h(int height) {
   glfwSetWindowSize(glfw_handle, w, height);
 }
 
-void Window::set_vsync(int enabled) {
-  vsync = enabled;
+void Window::set_decorated(bool is_decorated) {
+  decorated = is_decorated;
+  glfwSetWindowAttrib(glfw_handle, GLFW_DECORATED, is_decorated ? GLFW_TRUE : GLFW_FALSE);
+}
+
+void Window::set_resizable(bool is_resizable) {
+  resizable = is_resizable;
+  glfwSetWindowAttrib(glfw_handle, GLFW_RESIZABLE, is_resizable ? GLFW_TRUE : GLFW_FALSE);
+}
+
+void Window::set_vsync(bool is_enabled) {
+  vsync = is_enabled;
   glfwSwapInterval(vsync ? 1 : 0);
 }
 
 bool Window::should_close() const {
   return glfwWindowShouldClose(glfw_handle);
+}
+
+void Window::set_should_close(bool should) {
+  glfwSetWindowShouldClose(glfw_handle, should ? 1 : 0);
 }
 
 void Window::swap() const {
@@ -174,6 +188,10 @@ void Window::open_windowed_(const WindowOpenParams &params) {
 
   glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
   glfwWindowHint(GLFW_RESIZABLE, set(params.flags, WindowFlags::resizable) ? GLFW_TRUE : GLFW_FALSE);
+  if (set(params.flags, WindowFlags::undecorated)) {
+    decorated = false;
+    glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+  }
 
   glfw_handle = glfwCreateWindow(params.size.x, params.size.y, params.title.c_str(), nullptr, nullptr);
   if (!glfw_handle) {

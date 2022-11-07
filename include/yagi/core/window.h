@@ -12,13 +12,14 @@
 namespace yagi {
 
 enum class WindowFlags {
-  none       = 1 << 0,
-  vsync      = 1 << 1,
-  resizable  = 1 << 2,
-  hidden     = 1 << 3,
-  centered   = 1 << 4,
-  fullscreen = 1 << 5,
-  borderless = 1 << 6
+  none        = 1 << 0,
+  vsync       = 1 << 1,
+  resizable   = 1 << 2,
+  hidden      = 1 << 3,
+  centered    = 1 << 4,
+  fullscreen  = 1 << 5,
+  borderless  = 1 << 6,
+  undecorated = 1 << 7,
 };
 
 struct WindowOpenParams {
@@ -40,7 +41,9 @@ public:
   // To change these, use the corresponding set_* call
   int x{0}, y{0};
   int w{0}, h{0};
+  bool decorated{true};
   bool borderless{false};
+  bool resizable{false};
   bool vsync{false};
 
   GLFWwindow *glfw_handle{nullptr};
@@ -56,9 +59,12 @@ public:
   void set_w(int width);
   void set_h(int height);
 
-  void set_vsync(int enabled);
+  void set_decorated(bool is_decorated);
+  void set_resizable(bool is_resizable);
+  void set_vsync(bool is_enabled);
 
   bool should_close() const;
+  void set_should_close(bool should);
 
   void swap() const;
 
