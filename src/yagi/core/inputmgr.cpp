@@ -93,10 +93,10 @@ bool InputMgr::down(const std::string &binding, double interval, double delay) {
     } else if (state_[action]) {
       if (delay >= 0.0) {
         repeat_state_[action] = Repeat{
-          .time = interval,
-          .interval = interval,
-          .delay = delay,
-          .delay_stage = true
+            .time = interval,
+            .interval = interval,
+            .delay = delay,
+            .delay_stage = true
         };
         return false;
       } else {

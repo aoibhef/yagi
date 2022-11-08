@@ -60,6 +60,8 @@ private:
   struct {
     bool enabled{false};
 
+    ImVec2 fps_plot_size{100.0f, 35.0f};
+
     ImguiLogWindow log{};
   } overlay{};
 

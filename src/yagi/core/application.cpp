@@ -64,7 +64,7 @@ void Application::draw_debug_overlay_() {
     double mid = (*dt_max + *dt_min) / 2.0;
 
     ImPlot::PushStyleVar(ImPlotStyleVar_PlotPadding, {0, 0});
-    if (ImPlot::BeginPlot("FPS_History", {100,35}, ImPlotFlags_CanvasOnly | ImPlotFlags_NoFrame | ImPlotFlags_NoInputs)) {
+    if (ImPlot::BeginPlot("FPS_History", overlay.fps_plot_size, ImPlotFlags_CanvasOnly | ImPlotFlags_NoFrame | ImPlotFlags_NoInputs)) {
       ImPlot::SetupAxes(nullptr, nullptr, ImPlotAxisFlags_NoDecorations, ImPlotAxisFlags_NoDecorations);
       ImPlot::SetupAxisLimits(ImAxis_X1, 0, dts.size(), ImPlotCond_Always);
       ImPlot::SetupAxisLimits(ImAxis_Y1, mid - 1.5 * (*dt_max - mid), mid + 1.5 * (*dt_max - mid), ImPlotCond_Always);
@@ -72,6 +72,12 @@ void Application::draw_debug_overlay_() {
       ImPlot::EndPlot();
     }
     ImPlot::PopStyleVar();
+
+    if (ImGui::BeginPopupContextWindow()) {
+      ImGui::InputFloat("FPS plot width", &overlay.fps_plot_size[0]);
+      ImGui::InputFloat("FPS plot height", &overlay.fps_plot_size[1]);
+      ImGui::EndPopup();
+    }
   }
   ImGui::End();
 

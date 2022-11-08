@@ -1,6 +1,7 @@
 #include "yagi/util/log.h"
 #include "yagi/core/glfw_callbacks.h"
 #include "yagi/msg/bus.h"
+#include "imgui.h"
 
 namespace yagi::internal {
 
@@ -67,27 +68,33 @@ void window_refresh_callback(GLFWwindow *window) {
 }
 
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
-  Bus::send_nowait<MsgType::Key>(window, key, scancode, action, mods);
+  if (!ImGui::GetIO().WantCaptureKeyboard)
+    Bus::send_nowait<MsgType::Key>(window, key, scancode, action, mods);
 }
 
 void character_callback(GLFWwindow *window, unsigned int codepoint) {
-  Bus::send_nowait<MsgType::Character>(window, codepoint);
+  if (!ImGui::GetIO().WantCaptureKeyboard)
+    Bus::send_nowait<MsgType::Character>(window, codepoint);
 }
 
 void cursor_position_callback(GLFWwindow *window, double xpos, double ypos) {
-  Bus::send_nowait<MsgType::CursorPos>(window, xpos, ypos);
+  if (!ImGui::GetIO().WantCaptureMouse)
+    Bus::send_nowait<MsgType::CursorPos>(window, xpos, ypos);
 }
 
 void cursor_enter_callback(GLFWwindow *window, int entered) {
-  Bus::send_nowait<MsgType::CursorEnter>(window, entered);
+  if (!ImGui::GetIO().WantCaptureMouse)
+    Bus::send_nowait<MsgType::CursorEnter>(window, entered);
 }
 
 void mouse_button_callback(GLFWwindow *window, int button, int action, int mods) {
-  Bus::send_nowait<MsgType::MouseButton>(window, button, action, mods);
+  if (!ImGui::GetIO().WantCaptureMouse)
+    Bus::send_nowait<MsgType::MouseButton>(window, button, action, mods);
 }
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
-  Bus::send_nowait<MsgType::Scroll>(window, xoffset, yoffset);
+  if (!ImGui::GetIO().WantCaptureMouse)
+    Bus::send_nowait<MsgType::Scroll>(window, xoffset, yoffset);
 }
 
 void joystick_callback(int jid, int event) {
